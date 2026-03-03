@@ -1,0 +1,12 @@
+{
+  "nav": { "product": "Product", "revops": "RevOps Consulting", "pricing": "Pricing", "contact": "Contact", "login": "Log In" },
+  "hero": {
+    "headline": "When revenue is real,",
+    "headline2": "profitability works.",
+    "headline3": "scaling becomes predictable.",
+    "sub": "The Revenue Operating System for ambitious D2C brands.",
+    "sub2": "Reconcile your ad platform data with actual bank deposits — in real time.",
+    "ctaPrimary": "See your real numbers",
+    "ctaSecondary": "Watch demo"
+  }
+}
