@@ -1,5 +1,5 @@
 :root {
-  /* Brand */
+  /* Brand (NEW) */
   --bg-0: #050711;
   --bg-1: #070a16;
   --card: rgba(255,255,255,0.06);
@@ -17,10 +17,40 @@
   --radius: 16px;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+
+  /* -------------------------------------------------
+     COMPAT: map a los tokens que ya usabas (OLD)
+     ------------------------------------------------- */
+  --bg-primary: var(--bg-0);
+  --bg-secondary: var(--bg-1);
+
+  --bg-card: var(--card);
+  --bg-card-light: var(--card-2);
+
+  --text-primary: var(--text-0);
+  --text-secondary: var(--text-1);
+  --text-muted: var(--text-2);
+
+  --brand-info: var(--primary);
+  --color-primary: var(--primary);
+  --color-ring: var(--primary);
+
+  --border-subtle: var(--stroke);
+  --color-border: var(--stroke);
+
+  /* Shadcn/tw map (si lo estás usando) */
+  --color-background: var(--bg-0);
+  --color-foreground: var(--text-0);
+  --color-card: var(--card);
+  --color-card-foreground: var(--text-0);
+  --color-muted: rgba(255,255,255,0.04);
+  --color-muted-foreground: var(--text-2);
+  --radius-lg: var(--radius);
 }
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
+
 body {
   margin: 0;
   font-family: var(--font-sans);
@@ -33,11 +63,13 @@ body {
 
 a { color: inherit; text-decoration: none; }
 
+/* Layout */
 .container {
   width: min(1100px, calc(100% - 48px));
   margin: 0 auto;
 }
 
+/* Surfaces */
 .glass {
   background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
   border: 1px solid var(--stroke);
@@ -46,6 +78,7 @@ a { color: inherit; text-decoration: none; }
   backdrop-filter: blur(10px);
 }
 
+/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -63,6 +96,7 @@ a { color: inherit; text-decoration: none; }
   background: rgba(255,255,255,0.05);
 }
 
+/* Inputs */
 .input, .textarea {
   width: 100%;
   border-radius: 14px;
