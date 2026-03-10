@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
+import { useGsapReveal } from '../hooks/useGsapReveal'
 
 const rotatingPhrases = [
   'profitability works',
@@ -68,7 +69,7 @@ function HeroSection() {
           },
         })
         .to(currentPhrase, {
-          duration: 0.55,
+          duration: 0.82,
           yPercent: -100,
           rotationX: 82,
           opacity: 0,
@@ -77,99 +78,143 @@ function HeroSection() {
         .to(
           nextPhrase,
           {
-            duration: 0.55,
+            duration: 0.82,
             yPercent: 0,
             rotationX: 0,
             opacity: 1,
             ease: 'power2.out',
           },
-          0.08,
+          0.12,
         )
     }
 
-    const intervalId = window.setInterval(animateFlip, 2500)
+    const kickOffId = window.setTimeout(animateFlip, 1700)
+    const intervalId = window.setInterval(animateFlip, 3000)
 
     return () => {
+      window.clearTimeout(kickOffId)
       window.clearInterval(intervalId)
       isAnimatingRef.current = false
       gsap.killTweensOf([currentPhrase, nextPhrase])
     }
   }, [])
 
+  const { rootRef: textRevealRef } = useGsapReveal<HTMLElement>({
+    itemsSelector: '[data-reveal-text]',
+    start: 'top 86%',
+    once: false,
+    xItems: -72,
+    yItems: 0,
+    durationItems: 0.6,
+    stagger: 0.12,
+  })
+
+  const { rootRef: visualRevealRef } = useGsapReveal<HTMLElement>({
+    itemsSelector: '[data-reveal-visual]',
+    start: 'top 84%',
+    once: false,
+    xItems: 0,
+    yItems: 52,
+    durationItems: 0.62,
+    stagger: 0.14,
+  })
+
+  const sectionRef = useCallback(
+    (node: HTMLElement | null) => {
+      textRevealRef(node)
+      visualRevealRef(node)
+    },
+    [textRevealRef, visualRevealRef],
+  )
+
   return (
-    <section className="relative overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="relative min-h-[700px] overflow-hidden bg-[var(--bg-primary)] sm:min-h-[780px] md:min-h-0"
+    >
       <img
         aria-hidden="true"
         src="/assets/bg_hero.png"
         alt=""
-        className="pointer-events-none block h-auto w-full select-none"
+        className="pointer-events-none hidden h-auto w-full select-none md:block"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 opacity-70 md:hidden"
         style={{
           background:
-            'radial-gradient(circle at 50% 14%, rgba(120, 165, 255, 0.2) 0%, rgba(120, 165, 255, 0.08) 34%, rgba(120, 165, 255, 0) 66%), linear-gradient(180deg, rgba(6, 8, 13, 0.08) 0%, rgba(6, 8, 13, 0.22) 42%, rgba(6, 8, 13, 0.44) 72%, rgba(6, 8, 13, 0.74) 100%)',
+            'radial-gradient(65% 82% at 72% 84%, color-mix(in srgb, var(--brand-warning) 22%, transparent) 0%, transparent 62%), radial-gradient(72% 76% at 26% 62%, color-mix(in srgb, var(--brand-info) 14%, transparent) 0%, transparent 70%)',
         }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-8 h-[520px] w-[760px] -translate-x-1/2 rounded-full blur-3xl"
+        className="pointer-events-none absolute inset-x-0 top-0 h-28 md:hidden"
         style={{
           background:
-            'radial-gradient(circle, rgba(214, 169, 110, 0.3) 0%, rgba(114, 148, 229, 0.14) 42%, rgba(114, 148, 229, 0) 78%)',
+            'linear-gradient(180deg, var(--bg-primary) 0%, color-mix(in srgb, var(--bg-primary) 98%, transparent) 72%, rgba(6, 8, 13, 0) 100%)',
         }}
       />
 
       <div className="absolute inset-0 z-10">
-        <div className="mx-auto w-full max-w-[1120px] px-6 pt-16 md:px-8 md:pt-24">
-        <div className="mx-auto max-w-[980px] text-center">
-          <h1
-            className="font-[var(--font-heading)] text-[clamp(2.25rem,6vw,5rem)] leading-[1.1] text-[var(--text-primary)]"
-          >
-            When revenue is real,
-            <br />
-            <span className="relative inline-grid align-top text-[var(--brand-warning)] [perspective:1000px]">
-              <span aria-hidden="true" className="invisible">
-                scaling becomes predictable
+        <div className="mx-auto w-full max-w-[1120px] px-5 pt-12 sm:px-6 sm:pt-14 md:px-8 md:pt-20">
+          <div className="mx-auto max-w-[980px] text-center">
+            <h1
+              data-reveal-text
+              className="font-[var(--font-heading)] text-[clamp(2.05rem,10vw,5rem)] leading-[1.1] text-[var(--text-primary)]"
+            >
+              When revenue is real,
+              <br />
+              <span className="relative mx-auto inline-grid w-[8.2em] align-top text-center text-[var(--brand-warning)] [perspective:1000px] md:w-auto md:whitespace-nowrap">
+                <span aria-hidden="true" className="invisible block md:whitespace-nowrap">
+                  scaling becomes predictable
+                </span>
+                <span
+                  ref={currentPhraseRef}
+                  className="absolute inset-0 block [backface-visibility:hidden] [transform-style:preserve-3d] md:whitespace-nowrap"
+                >
+                  profitability works
+                </span>
+                <span
+                  ref={nextPhraseRef}
+                  className="absolute inset-0 block [backface-visibility:hidden] [transform-style:preserve-3d] md:whitespace-nowrap"
+                >
+                  scaling becomes predictable
+                </span>
               </span>
-              <span
-                ref={currentPhraseRef}
-                className="absolute inset-0 [backface-visibility:hidden] [transform-style:preserve-3d]"
-              />
-              <span
-                ref={nextPhraseRef}
-                className="absolute inset-0 [backface-visibility:hidden] [transform-style:preserve-3d]"
-              />
-            </span>
-          </h1>
+            </h1>
 
-          <p className="body-lg mx-auto mt-8 max-w-[900px] text-[var(--text-secondary)]">
-            The Revenue Operating System for ambitious D2C brands.
-            <br className="hidden sm:block" />
-            Reconcile your ad platform data with actual bank deposits in real-time.
-          </p>
-
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
-              href="#"
-              className="btn-gradient body-lg inline-flex h-14 min-w-[280px] items-center justify-center gap-2 px-8"
+            <p
+              data-reveal-text
+              className="mx-auto mt-10 max-w-[860px] text-[clamp(1rem,4.8vw,1.25rem)] leading-[1.5] text-[var(--text-secondary)] md:body-lg"
             >
-              <span>See your real numbers</span>
-            </a>
+              The Revenue Operating System for ambitious D2C brands.
+              <br />
+              Reconcile your ad platform data with actual bank deposits in real-time.
+            </p>
 
-            <a
-              href="#"
-              className="body-lg inline-flex h-14 min-w-[240px] items-center justify-center gap-3 rounded-[var(--radius-lg)] widget-premium-border px-8 text-[var(--text-primary)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] hover:text-[var(--text-primary)]"
+            <div
+              data-reveal-visual
+              className="mx-auto mt-8 flex w-full max-w-[860px] flex-col items-center justify-center gap-4 sm:mt-10 sm:max-w-none sm:flex-row sm:gap-4"
             >
-              <span
-                aria-hidden="true"
-                className="inline-block h-0 w-0 border-y-[7px] border-y-transparent border-l-[11px] border-l-[var(--text-secondary)]"
-              />
-              <span>Watch demo</span>
-            </a>
+              <a
+                href="#"
+                className="btn-gradient body-lg inline-flex h-14 w-full items-center justify-center gap-2 px-6 sm:w-auto sm:min-w-[250px] sm:px-7"
+              >
+                <span>See your real numbers</span>
+              </a>
+
+              <a
+                href="#"
+                className="body-lg inline-flex h-14 w-full items-center justify-center gap-3 rounded-[var(--radius-lg)] widget-premium-border px-6 text-[var(--text-primary)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] hover:text-[var(--text-primary)] sm:w-auto sm:min-w-[220px] sm:px-7"
+              >
+                <span
+                  aria-hidden="true"
+                  className="inline-block h-0 w-0 border-y-[7px] border-y-transparent border-l-[11px] border-l-[var(--text-secondary)]"
+                />
+                <span>Watch demo</span>
+              </a>
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </section>
