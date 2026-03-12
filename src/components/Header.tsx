@@ -3,9 +3,9 @@ import { Menu, X } from 'lucide-react'
 
 const navItems = [
   { label: 'Product', href: '#product' },
-  { label: 'RevOps Consulting', href: '#' },
-  { label: 'Pricing', href: '#' },
-  { label: 'Contact', href: '#' },
+  { label: 'RevOps Consulting', href: '#advisory' },
+  { label: 'Pricing', href: '#pricing' },
+  { label: 'Contact', href: '#contact' },
 ]
 
 function Header() {

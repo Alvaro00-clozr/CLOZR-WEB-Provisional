@@ -1,5 +1,12 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
+import * as echarts from 'echarts/core'
+import { BarChart, LineChart } from 'echarts/charts'
+import { GraphicComponent, GridComponent, TooltipComponent } from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
+import type { EChartsOption } from 'echarts'
 import { useGsapReveal } from '../hooks/useGsapReveal'
+
+echarts.use([BarChart, LineChart, GridComponent, GraphicComponent, TooltipComponent, CanvasRenderer])
 
 const attributionSectionCopy = {
   eyebrow: 'THE ATTRIBUTION ILLUSION',
@@ -33,219 +40,308 @@ function AttributionComparisonChart({
   chartLabelBankLine1,
   chartLabelBankLine2,
 }: AttributionComparisonChartProps) {
+  const chartRef = useRef<HTMLDivElement | null>(null)
   const claimedValue = 100
   const bankValue = 70
 
-  const width = 420
-  const height = 420
-  const chartTop = 54
-  const chartBottom = 302
-  const chartLeft = 48
-  const chartRight = 372
-  const plotHeight = chartBottom - chartTop
+  useEffect(() => {
+    const chartNode = chartRef.current
+    if (!chartNode) return
 
-  const barWidth = 86
-  const claimedX = 102
-  const bankX = 232
-  const claimedCenterX = claimedX + barWidth / 2
-  const bankCenterX = bankX + barWidth / 2
+    const readCssVar = (variableName: string, fallback: string) => {
+      const value = getComputedStyle(document.documentElement)
+        .getPropertyValue(variableName)
+        .trim()
 
-  const valueToY = (value: number) => chartBottom - (value / 100) * plotHeight
+      return value || fallback
+    }
 
-  const claimedY = valueToY(claimedValue)
-  const bankY = valueToY(bankValue)
+    const withAlpha = (color: string, alpha: number) => {
+      const normalized = color.trim()
 
-  const trendPath = `M ${claimedCenterX} ${claimedY} C ${claimedCenterX + 54} ${
-    claimedY + 2
-  }, ${bankCenterX - 56} ${bankY - 6}, ${bankCenterX} ${bankY}`
+      if (normalized.startsWith('#')) {
+        let hex = normalized.slice(1)
+        if (hex.length === 3) {
+          hex = hex
+            .split('')
+            .map((char) => `${char}${char}`)
+            .join('')
+        }
+        const int = Number.parseInt(hex, 16)
+        if (!Number.isNaN(int)) {
+          const r = (int >> 16) & 255
+          const g = (int >> 8) & 255
+          const b = int & 255
+          return `rgba(${r}, ${g}, ${b}, ${alpha})`
+        }
+      }
+
+      const rgbMatch = normalized.match(/^rgba?\(([^)]+)\)$/i)
+      if (rgbMatch) {
+        const channels = rgbMatch[1]
+          .split(',')
+          .slice(0, 3)
+          .map((channel) => channel.trim())
+        if (channels.length === 3) {
+          return `rgba(${channels[0]}, ${channels[1]}, ${channels[2]}, ${alpha})`
+        }
+      }
+
+      return normalized
+    }
+
+    const brandInfo = readCssVar('--brand-info', '#75a5ff')
+    const brandWarning = readCssVar('--brand-warning', '#d6a85e')
+    const bgPrimary = readCssVar('--bg-primary', '#06080d')
+    const textPrimary = readCssVar('--text-primary', '#f3f4ff')
+    const textSecondary = readCssVar('--text-secondary', '#ced4e8')
+    const textMuted = readCssVar('--text-muted', '#8b91a5')
+    const bgCard = readCssVar('--bg-card', '#0b1226')
+    const numbersFont = readCssVar(
+      '--font-chart',
+      readCssVar('--font-body', 'Satoshi, sans-serif'),
+    )
+
+    const chart = echarts.init(chartNode)
+
+    const option: EChartsOption = {
+      animationDuration: 760,
+      animationDurationUpdate: 520,
+      animationEasing: 'cubicOut',
+      animationEasingUpdate: 'cubicOut',
+      grid: {
+        left: 38,
+        right: 26,
+        top: 26,
+        bottom: 76,
+      },
+      xAxis: {
+        type: 'category',
+        data: [
+          `${chartLabelClaimedLine1}\n${chartLabelClaimedLine2}`,
+          `${chartLabelBankLine1}\n${chartLabelBankLine2}`,
+        ],
+        axisTick: { show: false },
+        axisLine: {
+          lineStyle: {
+            color: withAlpha(textMuted, 0.3),
+          },
+        },
+        axisLabel: {
+          interval: 0,
+          margin: 18,
+          color: textSecondary,
+          fontSize: 12,
+          lineHeight: 16,
+        },
+      },
+      yAxis: {
+        type: 'value',
+        min: 0,
+        max: 100,
+        interval: 25,
+        axisLine: { show: false },
+        axisTick: { show: false },
+        axisLabel: {
+          color: textMuted,
+          fontFamily: numbersFont,
+          fontSize: 11,
+        },
+        splitLine: {
+          lineStyle: {
+            color: withAlpha(textMuted, 0.16),
+            type: 'dashed',
+          },
+        },
+      },
+      series: [
+        {
+          type: 'bar',
+          barWidth: 58,
+          label: {
+            show: true,
+            position: 'top',
+            distance: 8,
+            color: textPrimary,
+            fontFamily: numbersFont,
+            fontSize: 16,
+            fontWeight: 700,
+            formatter: '{c}',
+          },
+          data: [
+            {
+              value: claimedValue,
+              itemStyle: {
+                borderRadius: [9, 9, 0, 0],
+                borderWidth: 1,
+                borderColor: withAlpha(brandInfo, 0.6),
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  {
+                    offset: 0,
+                    color: withAlpha(brandInfo, 0.72),
+                  },
+                  {
+                    offset: 1,
+                    color: withAlpha(brandInfo, 0.18),
+                  },
+                ]),
+              },
+            },
+            {
+              value: bankValue,
+              itemStyle: {
+                borderRadius: [9, 9, 0, 0],
+                borderWidth: 1,
+                borderColor: withAlpha(brandInfo, 0.48),
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  {
+                    offset: 0,
+                    color: withAlpha(brandInfo, 0.56),
+                  },
+                  {
+                    offset: 1,
+                    color: withAlpha(brandInfo, 0.14),
+                  },
+                ]),
+              },
+            },
+          ],
+          z: 2,
+        },
+        {
+          type: 'line',
+          data: [claimedValue, bankValue],
+          smooth: 0.4,
+          symbol: 'circle',
+          symbolSize: 8,
+          lineStyle: {
+            color: brandInfo,
+            width: 2.2,
+          },
+          itemStyle: {
+            color: brandInfo,
+            borderColor: withAlpha(bgPrimary, 0.9),
+            borderWidth: 2,
+          },
+          z: 3,
+        },
+      ],
+      graphic: [],
+      tooltip: {
+        show: false,
+      },
+    }
+
+    chart.setOption(option)
+
+    const updateGraphicOverlay = () => {
+      const claimedTop = chart.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [
+        0,
+        claimedValue,
+      ]) as number[]
+      const bankTop = chart.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [
+        1,
+        bankValue,
+      ]) as number[]
+
+      const x = Math.min(bankTop[0] + 50, chart.getWidth() - 32)
+      const yTop = claimedTop[1]
+      const yBottom = bankTop[1]
+      const yCenter = (yTop + yBottom) / 2
+
+      chart.setOption(
+        {
+          graphic: [
+            {
+              type: 'line',
+              shape: { x1: x, y1: yTop, x2: x, y2: yBottom },
+              style: {
+                stroke: withAlpha(brandWarning, 0.68),
+                lineWidth: 1.2,
+                lineDash: [3, 4],
+              },
+              silent: true,
+            },
+            {
+              type: 'line',
+              shape: { x1: x - 6, y1: yTop, x2: x + 6, y2: yTop },
+              style: {
+                stroke: withAlpha(brandWarning, 0.74),
+                lineWidth: 1.2,
+              },
+              silent: true,
+            },
+            {
+              type: 'line',
+              shape: { x1: x - 6, y1: yBottom, x2: x + 6, y2: yBottom },
+              style: {
+                stroke: withAlpha(brandWarning, 0.74),
+                lineWidth: 1.2,
+              },
+              silent: true,
+            },
+            {
+              type: 'rect',
+              shape: { x: x - 27, y: yCenter - 16, width: 54, height: 30, r: 6 },
+              style: {
+                fill: withAlpha(bgCard, 0.92),
+                stroke: withAlpha(brandWarning, 0.54),
+                lineWidth: 1,
+              },
+              silent: true,
+            },
+            {
+              type: 'text',
+              style: {
+                x,
+                y: yCenter - 1,
+                text: chartBadge,
+                fill: brandWarning,
+                textAlign: 'center',
+                textVerticalAlign: 'middle',
+                fontFamily: numbersFont,
+                fontWeight: 700,
+                fontSize: 14,
+              },
+              silent: true,
+            },
+          ],
+        },
+        { replaceMerge: ['graphic'] },
+      )
+    }
+
+    updateGraphicOverlay()
+
+    const resizeObserver = new ResizeObserver(() => {
+      chart.resize()
+      updateGraphicOverlay()
+    })
+
+    resizeObserver.observe(chartNode)
+
+    return () => {
+      resizeObserver.disconnect()
+      chart.dispose()
+    }
+  }, [
+    bankValue,
+    chartBadge,
+    chartLabelBankLine1,
+    chartLabelBankLine2,
+    chartLabelClaimedLine1,
+    chartLabelClaimedLine2,
+    claimedValue,
+  ])
 
   return (
     <div className="relative w-full rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_18%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] p-2 sm:p-3">
-      <svg
+      <div
+        ref={chartRef}
         role="img"
         aria-label="Revenue attribution comparison chart"
         className="block aspect-square w-full"
-        viewBox={`0 0 ${width} ${height}`}
-      >
-        <defs>
-          <linearGradient id="claimedBarFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" style={{ stopColor: 'var(--brand-info)', stopOpacity: 0.68 }} />
-            <stop offset="100%" style={{ stopColor: 'var(--brand-info)', stopOpacity: 0.14 }} />
-          </linearGradient>
-          <linearGradient id="bankBarFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" style={{ stopColor: 'var(--brand-info)', stopOpacity: 0.48 }} />
-            <stop offset="100%" style={{ stopColor: 'var(--brand-info)', stopOpacity: 0.1 }} />
-          </linearGradient>
-          <filter id="lineGlow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="2.6" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-
-        {[100, 75, 50, 25, 0].map((level) => {
-          const y = valueToY(level)
-          const isBaseLine = level === 0
-
-          return (
-            <g key={level}>
-              <line
-                x1={chartLeft}
-                y1={y}
-                x2={chartRight}
-                y2={y}
-                stroke={
-                  isBaseLine
-                    ? 'color-mix(in srgb, var(--text-muted) 30%, transparent)'
-                    : 'color-mix(in srgb, var(--text-muted) 16%, transparent)'
-                }
-                strokeWidth={isBaseLine ? 1.2 : 1}
-                strokeDasharray={isBaseLine ? undefined : '3 5'}
-              />
-              <text
-                x={chartLeft - 12}
-                y={y + 4}
-                textAnchor="end"
-                className="font-numbers"
-                fontSize="11"
-                fill="color-mix(in srgb, var(--text-muted) 88%, transparent)"
-              >
-                {level}
-              </text>
-            </g>
-          )
-        })}
-
-        <rect
-          x={claimedX}
-          y={claimedY}
-          width={barWidth}
-          height={chartBottom - claimedY}
-          rx="8"
-          fill="url(#claimedBarFill)"
-          stroke="color-mix(in srgb, var(--brand-info) 60%, transparent)"
-        />
-        <rect
-          x={bankX}
-          y={bankY}
-          width={barWidth}
-          height={chartBottom - bankY}
-          rx="8"
-          fill="url(#bankBarFill)"
-          stroke="color-mix(in srgb, var(--brand-info) 46%, transparent)"
-        />
-
-        <path
-          d={trendPath}
-          fill="none"
-          stroke="var(--brand-info)"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          filter="url(#lineGlow)"
-        />
-
-        <circle cx={claimedCenterX} cy={claimedY} r="4.5" fill="var(--brand-info)" />
-        <circle cx={bankCenterX} cy={bankY} r="4.5" fill="var(--brand-info)" />
-
-        <line
-          x1="356"
-          y1={claimedY}
-          x2="356"
-          y2={bankY}
-          stroke="color-mix(in srgb, var(--brand-warning) 68%, transparent)"
-          strokeWidth="1.2"
-          strokeDasharray="2 4"
-        />
-        <line
-          x1="350"
-          y1={claimedY}
-          x2="362"
-          y2={claimedY}
-          stroke="color-mix(in srgb, var(--brand-warning) 74%, transparent)"
-          strokeWidth="1.2"
-        />
-        <line
-          x1="350"
-          y1={bankY}
-          x2="362"
-          y2={bankY}
-          stroke="color-mix(in srgb, var(--brand-warning) 74%, transparent)"
-          strokeWidth="1.2"
-        />
-
-        <rect
-          x="328"
-          y={(claimedY + bankY) / 2 - 15}
-          width="54"
-          height="30"
-          rx="6"
-          fill="color-mix(in srgb, var(--bg-card) 92%, transparent)"
-          stroke="color-mix(in srgb, var(--brand-warning) 54%, transparent)"
-        />
-        <text
-          x="355"
-          y={(claimedY + bankY) / 2 + 4}
-          textAnchor="middle"
-          className="font-numbers"
-          fontSize="14"
-          fill="var(--brand-warning)"
-        >
-          {chartBadge}
-        </text>
-
-        <text
-          x={claimedCenterX}
-          y={claimedY - 10}
-          textAnchor="middle"
-          className="font-numbers"
-          fontSize="13"
-          fill="var(--text-primary)"
-        >
-          {claimedValue}
-        </text>
-        <text
-          x={bankCenterX}
-          y={bankY - 10}
-          textAnchor="middle"
-          className="font-numbers"
-          fontSize="16"
-          fill="var(--text-primary)"
-        >
-          {bankValue}
-        </text>
-
-        <text
-          x={claimedCenterX}
-          y="340"
-          textAnchor="middle"
-          fontSize="13"
-          fill="var(--text-secondary)"
-        >
-          <tspan x={claimedCenterX} dy="0">
-            {chartLabelClaimedLine1}
-          </tspan>
-          <tspan x={claimedCenterX} dy="16">
-            {chartLabelClaimedLine2}
-          </tspan>
-        </text>
-        <text
-          x={bankCenterX}
-          y="340"
-          textAnchor="middle"
-          fontSize="16"
-          fill="var(--text-secondary)"
-        >
-          <tspan x={bankCenterX} dy="0">
-            {chartLabelBankLine1}
-          </tspan>
-          <tspan x={bankCenterX} dy="16">
-            {chartLabelBankLine2}
-          </tspan>
-        </text>
-      </svg>
-
+      />
     </div>
   )
 }
@@ -283,25 +379,8 @@ function AttributionSection() {
     <section
       ref={sectionRef}
       id="product"
-      className="relative overflow-hidden scroll-mt-24 bg-[var(--bg-primary)] py-20 md:scroll-mt-28 md:py-28"
+      className="relative overflow-hidden scroll-mt-24 py-20 md:scroll-mt-28 md:py-28"
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-70"
-        style={{
-          background:
-            'radial-gradient(65% 82% at 72% 18%, color-mix(in srgb, var(--brand-warning) 22%, transparent) 0%, transparent 62%), radial-gradient(72% 76% at 26% 44%, color-mix(in srgb, var(--brand-info) 14%, transparent) 0%, transparent 70%)',
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-28 md:h-36"
-        style={{
-          background:
-            'linear-gradient(180deg, rgba(6, 8, 13, 0) 0%, color-mix(in srgb, var(--bg-primary) 98%, transparent) 78%, var(--bg-primary) 100%)',
-        }}
-      />
-
       <div className="relative mx-auto w-full max-w-[1120px] px-6 md:px-8">
         <div className="mx-auto max-w-[980px]">
           <div data-reveal-text className="flex items-center gap-5">

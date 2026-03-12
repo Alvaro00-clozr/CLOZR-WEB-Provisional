@@ -130,31 +130,14 @@ function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[700px] overflow-hidden bg-[var(--bg-primary)] sm:min-h-[780px] md:min-h-0"
+      className="relative min-h-[700px] overflow-hidden bg-transparent sm:min-h-[780px] md:min-h-0"
     >
       <img
         aria-hidden="true"
         src="/assets/bg_hero.png"
         alt=""
-        className="pointer-events-none hidden h-auto w-full select-none md:block"
+        className="hero-bg-image pointer-events-none hidden h-auto w-full select-none md:block"
       />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-70 md:hidden"
-        style={{
-          background:
-            'radial-gradient(65% 82% at 72% 84%, color-mix(in srgb, var(--brand-warning) 22%, transparent) 0%, transparent 62%), radial-gradient(72% 76% at 26% 62%, color-mix(in srgb, var(--brand-info) 14%, transparent) 0%, transparent 70%)',
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-28 md:hidden"
-        style={{
-          background:
-            'linear-gradient(180deg, var(--bg-primary) 0%, color-mix(in srgb, var(--bg-primary) 98%, transparent) 72%, rgba(6, 8, 13, 0) 100%)',
-        }}
-      />
-
       <div className="absolute inset-0 z-10">
         <div className="mx-auto w-full max-w-[1120px] px-5 pt-12 sm:px-6 sm:pt-14 md:px-8 md:pt-20">
           <div className="mx-auto max-w-[980px] text-center">

@@ -1,11 +1,18 @@
 const footerColumns = [
   {
     title: 'Product',
-    links: ['Home', 'Pricing'],
+    links: [
+      { label: 'Home', href: '#top' },
+      { label: 'Product', href: '#product' },
+      { label: 'Pricing', href: '#pricing' },
+    ],
   },
   {
     title: 'Resources',
-    links: ['RevOps Consulting', 'Contact'],
+    links: [
+      { label: 'RevOps Consulting', href: '#advisory' },
+      { label: 'Contact', href: '#contact' },
+    ],
   },
 ]
 
@@ -34,11 +41,11 @@ function Footer() {
                 <span className="body text-[var(--text-primary)]">{column.title}</span>
                 {column.links.map((link) => (
                   <a
-                    key={link}
-                    href="#"
+                    key={`${column.title}-${link.label}`}
+                    href={link.href}
                     className="body-sm inline-flex w-fit rounded-[var(--radius-lg)] px-1 py-0.5 text-[var(--text-muted)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] hover:text-[var(--text-primary)]"
                   >
-                    {link}
+                    {link.label}
                   </a>
                 ))}
               </div>

@@ -9,6 +9,7 @@
 :root {
   /* Background */
   --bg-primary: #06080d;
+  --bg-advisory: #052659;
   --bg-secondary: #0b0e14;
   --bg-card: rgba(8, 11, 17, 0.92);
   --bg-card-light: rgba(34, 40, 54, 0.96);
@@ -181,7 +182,7 @@
 
   body {
     margin: 0;
-    background: var(--gradient-bg-primary);
+    background: var(--bg-primary);
     color: var(--text-primary);
     font-family: var(--font-body), sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -244,6 +245,105 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+}
+
+@keyframes globalDriftAmber {
+  0% {
+    transform: translate3d(-2%, -1.5%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2.2%, 1.2%, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(-1.2%, 2.2%, 0) scale(1.03);
+  }
+}
+
+@keyframes globalDriftBlue {
+  0% {
+    transform: translate3d(1.2%, -1.8%, 0) scale(1.04);
+  }
+  50% {
+    transform: translate3d(-2.5%, 1.6%, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(2.1%, -1.1%, 0) scale(1.02);
+  }
+}
+
+@keyframes globalDriftSoft {
+  0% {
+    transform: translate3d(-1%, 2%, 0) scale(1.03);
+  }
+  50% {
+    transform: translate3d(1.6%, -1.6%, 0) scale(1.07);
+  }
+  100% {
+    transform: translate3d(-1.8%, -0.8%, 0) scale(1.04);
+  }
+}
+
+.global-motion-layer {
+  position: absolute;
+  inset: -18%;
+  will-change: transform;
+}
+
+.global-motion-layer--amber {
+  background: radial-gradient(
+    66% 76% at 70% 22%,
+    color-mix(in srgb, var(--brand-warning) 20%, transparent) 0%,
+    transparent 68%
+  );
+  animation: globalDriftAmber 36s ease-in-out infinite;
+}
+
+.global-motion-layer--blue {
+  background: radial-gradient(
+    72% 84% at 24% 36%,
+    color-mix(in srgb, var(--brand-info) 19%, transparent) 0%,
+    transparent 70%
+  );
+  animation: globalDriftBlue 44s ease-in-out infinite;
+}
+
+.global-motion-layer--soft {
+  background: radial-gradient(
+    72% 72% at 54% 58%,
+    color-mix(in srgb, var(--brand-warning) 11%, transparent) 0%,
+    transparent 74%
+  );
+  animation: globalDriftSoft 52s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .global-motion-layer--amber,
+  .global-motion-layer--blue,
+  .global-motion-layer--soft {
+    animation: none;
+  }
+}
+
+.hero-bg-image {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 72%,
+    rgba(0, 0, 0, 0.86) 82%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 72%,
+    rgba(0, 0, 0, 0.86) 82%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  opacity: 0.98;
 }
 
 /* ================================= */

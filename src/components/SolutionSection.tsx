@@ -72,7 +72,7 @@ function SolutionSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden bg-[var(--bg-primary)] py-20 md:py-28"
+      className="relative overflow-hidden py-20 md:py-28"
     >
       <div className="relative mx-auto w-full max-w-[1120px] px-6 md:px-8">
         <div className="mx-auto max-w-[980px]">
