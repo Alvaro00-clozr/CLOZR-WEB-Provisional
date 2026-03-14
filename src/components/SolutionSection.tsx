@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { RefreshCcw, Target, Droplets, type LucideIcon } from 'lucide-react'
 import { useGsapReveal } from '../hooks/useGsapReveal'
+import enDictionary from '../i18n/en'
 
 type SolutionCard = {
   titleLine1: string
@@ -11,28 +12,28 @@ type SolutionCard = {
 }
 
 const solutionSectionCopy = {
-  eyebrow: 'THE SOLUTION',
-  titleLine1: 'Total financial clarity.',
-  titleLine2: 'Zero manual spreadsheets.',
+  eyebrow: enDictionary.solution.eyebrow,
+  titleLine1: enDictionary.solution.titleLine1,
+  titleLine2: enDictionary.solution.titleLine2,
   cards: [
     {
-      titleLine1: 'Real-Time',
-      titleLine2: 'Reconciliation.',
-      description: 'Stripe + Ad Platforms synced instantly.',
+      titleLine1: enDictionary.solution.cards.reconciliation.titleLine1,
+      titleLine2: enDictionary.solution.cards.reconciliation.titleLine2,
+      description: enDictionary.solution.cards.reconciliation.description,
       accent: 'var(--brand-info)',
       Icon: RefreshCcw,
     },
     {
-      titleLine1: 'True CAC',
-      titleLine2: '& ROAS.',
-      description: 'See what it actually costs to acquire a paying customer, post-refunds.',
+      titleLine1: enDictionary.solution.cards.trueCacRoas.titleLine1,
+      titleLine2: enDictionary.solution.cards.trueCacRoas.titleLine2,
+      description: enDictionary.solution.cards.trueCacRoas.description,
       accent: 'var(--brand-info)',
       Icon: Target,
     },
     {
-      titleLine1: 'Hidden Leak',
-      titleLine2: 'Detection.',
-      description: 'Spot failed payments and chargebacks before they scale.',
+      titleLine1: enDictionary.solution.cards.hiddenLeak.titleLine1,
+      titleLine2: enDictionary.solution.cards.hiddenLeak.titleLine2,
+      description: enDictionary.solution.cards.hiddenLeak.description,
       accent: 'var(--brand-warning)',
       Icon: Droplets,
     },

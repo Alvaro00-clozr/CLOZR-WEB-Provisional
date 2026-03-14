@@ -1,24 +1,29 @@
 import { useCallback, useState, type FormEvent } from 'react'
 import { Mail, MessageSquareText } from 'lucide-react'
 import { useGsapReveal } from '../hooks/useGsapReveal'
+import enDictionary from '../i18n/en'
 
 const contactCopy = {
-  eyebrow: 'CONTACT',
-  support: 'Start the conversation',
-  headline: 'Tell us where growth is leaking.',
-  description:
-    'Share your current setup and goals. We will review your revenue infrastructure and propose the next operating plan.',
-  ctaLabel: 'Send Inquiry',
-  sideTitle: 'What happens next',
-  sidePoints: [
-    'Initial assessment of your current data stack',
-    'Priority diagnosis for attribution and cash gaps',
-    'Recommended path: SaaS, RevOps advisory, or hybrid',
-  ],
-  replyTime: 'Response time: usually within 1 business day.',
-  sendingLabel: 'Sending...',
-  successMessage: 'Message sent successfully. We will get back to you soon.',
-  errorMessage: 'Could not send message right now. Please try again.',
+  eyebrow: enDictionary.contact.eyebrow,
+  support: enDictionary.contact.support,
+  headline: enDictionary.contact.headline,
+  description: enDictionary.contact.description,
+  ctaLabel: enDictionary.contact.ctaLabel,
+  sideTitle: enDictionary.contact.sideTitle,
+  sidePoints: [...enDictionary.contact.sidePoints],
+  replyTime: enDictionary.contact.replyTime,
+  sendingLabel: enDictionary.contact.sendingLabel,
+  successMessage: enDictionary.contact.successMessage,
+  errorMessage: enDictionary.contact.errorMessage,
+  form: {
+    fullName: enDictionary.contact.form.fullName,
+    workEmail: enDictionary.contact.form.workEmail,
+    company: enDictionary.contact.form.company,
+    monthlyRevenue: enDictionary.contact.form.monthlyRevenue,
+    monthlyRevenuePlaceholder: enDictionary.contact.form.monthlyRevenuePlaceholder,
+    monthlyRevenueOptions: [...enDictionary.contact.form.monthlyRevenueOptions],
+    message: enDictionary.contact.form.message,
+  },
 }
 
 function ContactSection() {
@@ -155,7 +160,7 @@ function ContactSection() {
               <form className="relative grid gap-3" onSubmit={handleSubmit} noValidate>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="flex flex-col gap-1.5">
-                    <span className="body-sm text-[var(--text-secondary)]">Full Name</span>
+                    <span className="body-sm text-[var(--text-secondary)]">{contactCopy.form.fullName}</span>
                     <input
                       name="name"
                       type="text"
@@ -164,7 +169,7 @@ function ContactSection() {
                     />
                   </label>
                   <label className="flex flex-col gap-1.5">
-                    <span className="body-sm text-[var(--text-secondary)]">Work Email</span>
+                    <span className="body-sm text-[var(--text-secondary)]">{contactCopy.form.workEmail}</span>
                     <input
                       name="email"
                       type="email"
@@ -176,7 +181,7 @@ function ContactSection() {
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="flex flex-col gap-1.5">
-                    <span className="body-sm text-[var(--text-secondary)]">Brand / Company</span>
+                    <span className="body-sm text-[var(--text-secondary)]">{contactCopy.form.company}</span>
                     <input
                       name="company"
                       type="text"
@@ -184,25 +189,26 @@ function ContactSection() {
                     />
                   </label>
                   <label className="flex flex-col gap-1.5">
-                    <span className="body-sm text-[var(--text-secondary)]">Monthly Revenue</span>
+                    <span className="body-sm text-[var(--text-secondary)]">{contactCopy.form.monthlyRevenue}</span>
                     <select
                       name="revenue"
                       className="h-11 rounded-[10px] border border-[color-mix(in_srgb,var(--text-muted)_24%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_78%,transparent)] px-3 text-[var(--text-primary)] outline-none transition-all focus:border-[color-mix(in_srgb,var(--brand-info)_58%,transparent)] focus:shadow-[0_0_0_1px_color-mix(in_srgb,var(--brand-info)_42%,transparent)]"
                       defaultValue=""
                     >
                       <option value="" disabled>
-                        Select range
+                        {contactCopy.form.monthlyRevenuePlaceholder}
                       </option>
-                      <option value="0-50k">0 - 50k</option>
-                      <option value="50-200k">50k - 200k</option>
-                      <option value="200-500k">200k - 500k</option>
-                      <option value="500k+">500k+</option>
+                      {contactCopy.form.monthlyRevenueOptions.map((optionLabel) => (
+                        <option key={optionLabel} value={optionLabel.replace(/\s+/g, '').toLowerCase()}>
+                          {optionLabel}
+                        </option>
+                      ))}
                     </select>
                   </label>
                 </div>
 
                 <label className="flex flex-col gap-1.5">
-                  <span className="body-sm text-[var(--text-secondary)]">How can we help?</span>
+                  <span className="body-sm text-[var(--text-secondary)]">{contactCopy.form.message}</span>
                   <textarea
                     name="message"
                     rows={5}

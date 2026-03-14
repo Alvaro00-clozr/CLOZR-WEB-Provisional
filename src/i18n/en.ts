@@ -1,4 +1,9 @@
 export const enDictionary = {
+  seo: {
+    title: 'CLOZR | Revenue Operating System for D2C Brands',
+    description:
+      'CLOZR is the Revenue Operating System for ambitious D2C brands. Reconcile ad platform data with real bank deposits, uncover attribution errors, and scale with financial clarity.',
+  },
   header: {
     logoAlt: 'CLOZR',
     logoAriaLabel: 'CLOZR home',
@@ -205,6 +210,219 @@ export const enDictionary = {
       linkedIn: 'LinkedIn',
       x: 'X',
       email: 'Email',
+    },
+  },
+  legalPages: {
+    shared: {
+      backToHome: 'Back to home',
+      contactLabel: 'Contact',
+      contactEmail: 'hello@clozr.com',
+      noteTitle: 'Important',
+      noteBody:
+        'This legal copy should be reviewed by qualified counsel before production use, especially if your entity details, jurisdictions, or data flows change.',
+    },
+    terms: {
+      title: 'Terms and Conditions',
+      seoTitle: 'CLOZR | Terms and Conditions',
+      seoDescription:
+        'Read the Terms and Conditions governing access to the CLOZR website, services, subscriptions, and acceptable use.',
+      eyebrow: 'LEGAL',
+      lastUpdatedLabel: 'Last updated',
+      lastUpdatedValue: 'March 14, 2026',
+      intro:
+        'These Terms and Conditions govern access to and use of the CLOZR website, related communications, and any software, consulting, or advisory services made available by CLOZR.',
+      sections: [
+        {
+          heading: '1. Acceptance of Terms',
+          paragraphs: [
+            'By accessing this website or using any CLOZR service, you agree to be bound by these Terms and all applicable laws and regulations.',
+            'If you do not agree with these Terms, you must not access or use the website or services.',
+          ],
+        },
+        {
+          heading: '2. Services',
+          paragraphs: [
+            'CLOZR provides revenue operations software, advisory services, implementation support, and related business analytics tools for ecommerce and consumer brands.',
+            'Specific commercial terms, subscription scope, deliverables, support levels, and payment obligations may be defined in a separate order form, statement of work, or master services agreement.',
+          ],
+        },
+        {
+          heading: '3. Eligibility and Account Responsibility',
+          paragraphs: [
+            'You represent that you have authority to act on behalf of your business and to bind it contractually.',
+            'You are responsible for maintaining the confidentiality of any credentials used to access CLOZR systems and for all activity carried out under your account.',
+          ],
+        },
+        {
+          heading: '4. Acceptable Use',
+          paragraphs: [
+            'You may not use the website or services to violate any law, infringe third-party rights, interfere with system integrity, introduce malicious code, or attempt unauthorized access to any account, infrastructure, or data.',
+            'You must only submit information that you are authorized to process and share with CLOZR.',
+          ],
+        },
+        {
+          heading: '5. Client Data and Inputs',
+          paragraphs: [
+            'You retain responsibility for the legality, accuracy, and integrity of the operational, financial, advertising, and customer data you provide to CLOZR.',
+            'You grant CLOZR the limited rights necessary to process such data for the purpose of delivering the agreed services, maintaining the platform, and providing support.',
+          ],
+        },
+        {
+          heading: '6. Fees and Payment',
+          paragraphs: [
+            'Paid plans, consulting engagements, and enterprise services are subject to the pricing or commercial terms agreed between the parties.',
+            'Unless otherwise stated in writing, fees are non-refundable once the relevant subscription period or service period has started.',
+          ],
+        },
+        {
+          heading: '7. Intellectual Property',
+          paragraphs: [
+            'CLOZR and its licensors retain all rights, title, and interest in the website, platform, software, models, dashboards, visual materials, documentation, and related intellectual property.',
+            'Except where expressly agreed in writing, no ownership rights are transferred to you by virtue of accessing the website or using the services.',
+          ],
+        },
+        {
+          heading: '8. Confidentiality',
+          paragraphs: [
+            'Each party must protect confidential information disclosed by the other using reasonable technical and organizational safeguards.',
+            'Confidential information may only be used for the purposes of performing the relevant commercial relationship, unless disclosure is required by law.',
+          ],
+        },
+        {
+          heading: '9. Third-Party Services',
+          paragraphs: [
+            'CLOZR may integrate with or rely on third-party providers such as payment processors, advertising platforms, hosting providers, analytics infrastructure, and communication tools.',
+            'CLOZR is not responsible for outages, policy changes, or service limitations caused by third-party platforms outside its reasonable control.',
+          ],
+        },
+        {
+          heading: '10. Disclaimers',
+          paragraphs: [
+            'The website and services are provided on an as-available and as-provided basis, except to the extent otherwise stated in a signed agreement.',
+            'CLOZR does not warrant that the website will be uninterrupted, error-free, or suitable for every commercial use case.',
+          ],
+        },
+        {
+          heading: '11. Limitation of Liability',
+          paragraphs: [
+            'To the maximum extent permitted by law, CLOZR will not be liable for indirect, incidental, special, consequential, or punitive damages, including loss of profits, revenue, data, goodwill, or business opportunity.',
+            'Any direct liability of CLOZR arising out of or connected to the services will be limited to the amount paid by the client for the relevant services during the twelve months preceding the event giving rise to the claim, unless otherwise required by law or agreed in writing.',
+          ],
+        },
+        {
+          heading: '12. Termination',
+          paragraphs: [
+            'CLOZR may suspend or terminate access if you materially breach these Terms, misuse the services, or create a security, compliance, or legal risk.',
+            'Termination does not affect accrued rights, outstanding payment obligations, or any clauses intended to survive termination.',
+          ],
+        },
+        {
+          heading: '13. Governing Law',
+          paragraphs: [
+            'Unless otherwise agreed in writing, these Terms are governed by the laws applicable in the jurisdiction where CLOZR is established, excluding conflict-of-law provisions.',
+            'The competent courts of that jurisdiction will have exclusive authority to resolve disputes, subject to any mandatory consumer or data protection rights that may apply.',
+          ],
+        },
+        {
+          heading: '14. Contact',
+          paragraphs: [
+            'For legal notices, contractual questions, or requests related to these Terms, contact CLOZR at hello@clozr.com.',
+          ],
+        },
+      ],
+    },
+    privacy: {
+      title: 'Privacy Policy',
+      seoTitle: 'CLOZR | Privacy Policy',
+      seoDescription:
+        'Read the CLOZR Privacy Policy to understand what data is collected, how it is used, and what rights apply to website visitors and leads.',
+      eyebrow: 'LEGAL',
+      lastUpdatedLabel: 'Last updated',
+      lastUpdatedValue: 'March 14, 2026',
+      intro:
+        'This Privacy Policy explains how CLOZR collects, uses, stores, and protects personal data in connection with the CLOZR website, contact forms, and related communications.',
+      sections: [
+        {
+          heading: '1. Data Controller',
+          paragraphs: [
+            'CLOZR acts as the controller of personal data collected through this website for lead management, business communications, and website operations.',
+            'For privacy-related requests, you can contact hello@clozr.com.',
+          ],
+        },
+        {
+          heading: '2. Data We Collect',
+          paragraphs: [
+            'We may collect contact and business information that you voluntarily provide through the website, including your name, work email, company name, revenue range, and any message you submit through the contact form.',
+            'We may also process limited technical information required for security, system integrity, and delivery of the website and its server-side functions.',
+          ],
+        },
+        {
+          heading: '3. How We Use Personal Data',
+          paragraphs: [
+            'We use personal data to respond to inbound requests, evaluate commercial fit, provide information about our products or services, manage prospective client relationships, and operate the website securely.',
+            'We do not use your contact form data for unrelated purposes without an appropriate legal basis.',
+          ],
+        },
+        {
+          heading: '4. Legal Bases',
+          paragraphs: [
+            'Depending on the context, CLOZR processes personal data on the basis of pre-contractual measures requested by the data subject, legitimate interest in operating and securing the website, compliance with legal obligations, and, where applicable, consent.',
+          ],
+        },
+        {
+          heading: '5. Service Providers',
+          paragraphs: [
+            'We may share data with trusted service providers that support website hosting, infrastructure, communications, or form delivery, strictly to the extent necessary to provide the relevant service.',
+            'At present, contact form submissions may be transmitted through providers such as Resend for email delivery.',
+          ],
+        },
+        {
+          heading: '6. International Transfers',
+          paragraphs: [
+            'Where data is processed outside your country or the European Economic Area, CLOZR will seek to use appropriate safeguards required by applicable data protection law, such as contractual commitments or providers offering adequate protections.',
+          ],
+        },
+        {
+          heading: '7. Retention',
+          paragraphs: [
+            'We retain personal data only for as long as reasonably necessary for the purposes described in this Policy, including follow-up communications, legal compliance, dispute resolution, and record keeping.',
+            'Retention periods may vary depending on the relationship, legal obligations, and operational necessity.',
+          ],
+        },
+        {
+          heading: '8. Your Rights',
+          paragraphs: [
+            'Subject to applicable law, you may have rights of access, rectification, erasure, restriction, objection, portability, and the right to withdraw consent where processing is based on consent.',
+            'You may also have the right to lodge a complaint with the competent supervisory authority. For users in Spain, this may include the AEPD.',
+          ],
+        },
+        {
+          heading: '9. Security',
+          paragraphs: [
+            'CLOZR applies reasonable technical and organizational measures designed to protect personal data against unauthorized access, disclosure, alteration, or destruction.',
+            'No internet transmission or storage system can be guaranteed as completely secure, and you provide data at your own risk within that context.',
+          ],
+        },
+        {
+          heading: '10. Cookies and Tracking',
+          paragraphs: [
+            'This website should disclose any cookies, analytics tools, or tracking technologies that are active in production. If such tools are added or changed, this Policy should be updated accordingly.',
+            'If you implement analytics, advertising pixels, or consent tooling, you should complete this section before going live.',
+          ],
+        },
+        {
+          heading: '11. Third-Party Links',
+          paragraphs: [
+            'The website may contain links to third-party sites or services. CLOZR is not responsible for the privacy practices or content of external services not controlled by CLOZR.',
+          ],
+        },
+        {
+          heading: '12. Policy Updates',
+          paragraphs: [
+            'We may update this Privacy Policy from time to time. Material changes should be reflected by updating the last updated date and, where appropriate, by providing additional notice.',
+          ],
+        },
+      ],
     },
   },
 } as const

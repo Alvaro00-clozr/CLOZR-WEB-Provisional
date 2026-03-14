@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGsapReveal } from '../hooks/useGsapReveal'
+import enDictionary from '../i18n/en'
 
-const rotatingPhrases = [
-  'profitability works',
-  'scaling becomes predictable',
-  'ROAS stops lying',
-  'growth is guaranteed',
-]
+const copy = enDictionary.hero
+const rotatingPhrases = [...copy.rotatingPhrases]
 
 function HeroSection() {
   const currentPhraseRef = useRef<HTMLSpanElement>(null)
@@ -135,7 +132,7 @@ function HeroSection() {
       <img
         aria-hidden="true"
         src="/assets/bg_hero.png"
-        alt=""
+        alt={copy.backgroundAlt}
         className="hero-bg-image pointer-events-none hidden h-auto w-full select-none md:block"
       />
       <div className="absolute inset-0 z-10">
@@ -145,23 +142,23 @@ function HeroSection() {
               data-reveal-text
               className="font-[var(--font-heading)] text-[clamp(2.05rem,10vw,5rem)] leading-[1.1] text-[var(--text-primary)]"
             >
-              When revenue is real,
+              {copy.titleStart}
               <br />
               <span className="relative mx-auto inline-grid w-[8.2em] align-top text-center text-[var(--brand-warning)] [perspective:1000px] md:w-auto md:whitespace-nowrap">
                 <span aria-hidden="true" className="invisible block md:whitespace-nowrap">
-                  scaling becomes predictable
+                  {copy.rotatingPhrases[1]}
                 </span>
                 <span
                   ref={currentPhraseRef}
                   className="absolute inset-0 block [backface-visibility:hidden] [transform-style:preserve-3d] md:whitespace-nowrap"
                 >
-                  profitability works
+                  {copy.rotatingPhrases[0]}
                 </span>
                 <span
                   ref={nextPhraseRef}
                   className="absolute inset-0 block [backface-visibility:hidden] [transform-style:preserve-3d] md:whitespace-nowrap"
                 >
-                  scaling becomes predictable
+                  {copy.rotatingPhrases[1]}
                 </span>
               </span>
             </h1>
@@ -170,9 +167,9 @@ function HeroSection() {
               data-reveal-text
               className="mx-auto mt-10 max-w-[860px] text-[clamp(1rem,4.8vw,1.25rem)] leading-[1.5] text-[var(--text-secondary)] md:body-lg"
             >
-              The Revenue Operating System for ambitious D2C brands.
+              {copy.descriptionLine1}
               <br />
-              Reconcile your ad platform data with actual bank deposits in real-time.
+              {copy.descriptionLine2}
             </p>
 
             <div
@@ -183,7 +180,7 @@ function HeroSection() {
                 href="#"
                 className="btn-gradient body-lg inline-flex h-14 w-full items-center justify-center gap-2 px-6 sm:w-auto sm:min-w-[250px] sm:px-7"
               >
-                <span>See your real numbers</span>
+                <span>{copy.primaryCta}</span>
               </a>
 
               <a
@@ -194,7 +191,7 @@ function HeroSection() {
                   aria-hidden="true"
                   className="inline-block h-0 w-0 border-y-[7px] border-y-transparent border-l-[11px] border-l-[var(--text-secondary)]"
                 />
-                <span>Watch demo</span>
+                <span>{copy.secondaryCta}</span>
               </a>
             </div>
           </div>

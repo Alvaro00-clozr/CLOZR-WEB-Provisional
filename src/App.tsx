@@ -1,32 +1,16 @@
-import Header from './components/Header'
-import Footer from './components/Footer'
-import HeroSection from './components/HeroSection'
-import AttributionSection from './components/AttributionSection'
-import SolutionSection from './components/SolutionSection'
-import HybridBridgeSection from './components/HybridBridgeSection'
-import SocialProofSection from './components/SocialProofSection'
-import PricingSection from './components/PricingSection'
-import ContactSection from './components/ContactSection'
-import GlobalMotionBackground from './components/GlobalMotionBackground'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import HomePage from './pages/HomePage'
+import TermsPage from './pages/TermsPage'
+import PrivacyPage from './pages/PrivacyPage'
 
 function App() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main id="top" className="relative isolate flex-1 overflow-hidden pt-[60px]">
-        <GlobalMotionBackground />
-        <HeroSection />
-        <div className="relative">
-          <AttributionSection />
-          <SolutionSection />
-          <HybridBridgeSection />
-          <SocialProofSection />
-          <PricingSection />
-          <ContactSection />
-        </div>
-      </main>
-      <Footer />
-    </div>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   )
 }
 

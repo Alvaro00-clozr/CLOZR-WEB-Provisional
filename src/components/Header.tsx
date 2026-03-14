@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import enDictionary from '../i18n/en'
+
+const copy = enDictionary.header
 
 const navItems = [
-  { label: 'Product', href: '#product' },
-  { label: 'RevOps Consulting', href: '#advisory' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'Contact', href: '#contact' },
+  { label: copy.navItems.product, href: '/#product' },
+  { label: copy.navItems.revopsConsulting, href: '/#advisory' },
+  { label: copy.navItems.pricing, href: '/#pricing' },
+  { label: copy.navItems.contact, href: '/#contact' },
 ]
 
 function Header() {
@@ -32,15 +35,15 @@ function Header() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 h-[60px] backdrop-blur-[4px] backdrop-saturate-[130%]">
       <div className="mx-auto h-full flex w-full justify-between items-center px-6 md:px-8">
-        <a className="h-full inline-flex shrink-0 items-center" href="#top" aria-label="CLOZR home">
+        <a className="h-full inline-flex shrink-0 items-center" href="/#top" aria-label={copy.logoAriaLabel}>
           <img
             className="h-full max-h-[60px] w-auto object-contain"
             src="/brand/logo_white.svg"
-            alt="CLOZR"
+            alt={copy.logoAlt}
           />
         </a>
 
-        <nav className="hidden items-center justify-center gap-8 md:flex" aria-label="Main navigation">
+        <nav className="hidden items-center justify-center gap-8 md:flex" aria-label={copy.navAriaLabel}>
           {navItems.map((item) => (
             <a
               key={item.label}
@@ -57,11 +60,11 @@ function Header() {
           rel="noopener noreferrer"
           className="hidden h-12 w-36 body-sm cursor-pointer items-center justify-center tracking-wide btn-gradient md:flex"
         >
-          Get Started
+          {copy.cta.getStarted}
         </a>
         <button
           type="button"
-          aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-label={isMobileMenuOpen ? copy.closeMenuAriaLabel : copy.openMenuAriaLabel}
           aria-expanded={isMobileMenuOpen}
           aria-controls="mobile-main-navigation"
           className="inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_32%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_88%,transparent)] text-[var(--text-primary)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] md:hidden"
@@ -75,7 +78,7 @@ function Header() {
         <div className="md:hidden">
           <button
             type="button"
-            aria-label="Close mobile menu overlay"
+            aria-label={copy.closeOverlayAriaLabel}
             className="fixed inset-0 top-[60px] z-40 bg-black/30 backdrop-blur-[1px]"
             onClick={() => setIsMobileMenuOpen(false)}
           />
@@ -84,7 +87,7 @@ function Header() {
               id="mobile-main-navigation"
               className="widget-premium-border rounded-[var(--radius-lg)] bg-[var(--bg-card)] p-4"
             >
-              <nav className="flex flex-col gap-1.5" aria-label="Mobile main navigation">
+              <nav className="flex flex-col gap-1.5" aria-label={copy.mobileNavAriaLabel}>
                 {navItems.map((item) => (
                   <a
                     key={`mobile-${item.label}`}
@@ -103,7 +106,7 @@ function Header() {
                 className="btn-gradient body inline-flex h-12 w-full items-center justify-center tracking-wide"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Get Started
+                {copy.cta.getStarted}
               </a>
             </div>
           </div>

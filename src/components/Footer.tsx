@@ -1,25 +1,29 @@
+import enDictionary from '../i18n/en'
+
+const copy = enDictionary.footer
+
 const footerColumns = [
   {
-    title: 'Product',
+    title: copy.columns.product.title,
     links: [
-      { label: 'Home', href: '#top' },
-      { label: 'Product', href: '#product' },
-      { label: 'Pricing', href: '#pricing' },
+      { label: copy.columns.product.links.home, href: '/#top' },
+      { label: copy.columns.product.links.product, href: '/#product' },
+      { label: copy.columns.product.links.pricing, href: '/#pricing' },
     ],
   },
   {
-    title: 'Resources',
+    title: copy.columns.resources.title,
     links: [
-      { label: 'RevOps Consulting', href: '#advisory' },
-      { label: 'Contact', href: '#contact' },
+      { label: copy.columns.resources.links.revopsConsulting, href: '/#advisory' },
+      { label: copy.columns.resources.links.contact, href: '/#contact' },
     ],
   },
 ]
 
 const socialLinks = [
-  { label: 'LinkedIn', href: '#', iconSrc: '/network/LinkedIn.svg' },
-  { label: 'X', href: '#', iconSrc: '/network/X.svg' },
-  { label: 'Email', href: 'mailto:hello@clozr.com', iconSrc: '/network/Message.svg' },
+  { label: copy.social.linkedIn, href: '#', iconSrc: '/network/LinkedIn.svg' },
+  { label: copy.social.x, href: '#', iconSrc: '/network/X.svg' },
+  { label: copy.social.email, href: 'mailto:hello@clozr.com', iconSrc: '/network/Message.svg' },
 ]
 
 function Footer() {
@@ -30,7 +34,7 @@ function Footer() {
           <div className="flex justify-center md:justify-start">
             <img
               src="/brand/logo_text_white.png"
-              alt="CLOZR"
+              alt={copy.logoAlt}
               className="w-40"
             />
           </div>
@@ -43,7 +47,7 @@ function Footer() {
                   <a
                     key={`${column.title}-${link.label}`}
                     href={link.href}
-                    className="body-sm inline-flex w-fit rounded-[var(--radius-lg)] px-1 py-0.5 text-[var(--text-muted)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] hover:text-[var(--text-primary)]"
+                    className="body-sm inline-flex w-fit rounded-[var(--radius-lg)] px-2 py-1 text-[var(--text-muted)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] hover:text-[var(--text-primary)]"
                   >
                     {link.label}
                   </a>
@@ -57,20 +61,20 @@ function Footer() {
           <div className="flex flex-col items-center gap-2 md:items-start">
             <div className="flex items-center gap-3">
               <a
-                href="#"
+                href="/privacy"
                 className="body-sm inline-flex w-fit rounded-[var(--radius-lg)] px-3 py-1.5 text-[var(--text-muted)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] hover:text-[var(--text-primary)]"
               >
-                Privacy Policy
+                {copy.legal.privacyPolicy}
               </a>
               <a
-                href="#"
+                href="/terms"
                 className="body-sm inline-flex w-fit rounded-[var(--radius-lg)] px-3 py-1.5 text-[var(--text-muted)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] hover:text-[var(--text-primary)]"
               >
-                Terms
+                {copy.legal.terms}
               </a>
             </div>
             <p className="body text-center text-[var(--text-secondary)] md:text-left">
-              Madrid, Spain. Built for global brands.
+              {copy.location}
             </p>
           </div>
 

@@ -1,27 +1,22 @@
 import { useCallback } from 'react'
 import { BadgeCheck, Quote } from 'lucide-react'
 import { useGsapReveal } from '../hooks/useGsapReveal'
+import enDictionary from '../i18n/en'
 
 const socialProofCopy = {
-  eyebrow: 'SOCIAL PROOF & DATA',
-  headline: 'Built on verified financial models.',
-  subcopy:
-    'Every dashboard view is grounded in reconciled cash, refund-aware logic, and auditable attribution rules.',
-  integrationsTitle: 'ACTIVE INTEGRATIONS',
+  eyebrow: enDictionary.socialProof.eyebrow,
+  headline: enDictionary.socialProof.headline,
+  subcopy: enDictionary.socialProof.subcopy,
+  integrationsTitle: enDictionary.socialProof.integrationsTitle,
   integrations: [
-    { name: 'Stripe', src: '/social/stripe_logo.png' },
-    { name: 'Meta', src: '/social/meta_icon.png' },
-    { name: 'Google', src: '/social/google_icon.svg' },
+    { name: enDictionary.socialProof.integrations.stripe, src: '/social/stripe_logo.png' },
+    { name: enDictionary.socialProof.integrations.meta, src: '/social/meta_icon.png' },
+    { name: enDictionary.socialProof.integrations.google, src: '/social/google_icon.svg' },
   ],
-  certificationsTitle: 'MODEL CONTROLS',
-  certifications: [
-    'Bank-deposit reconciliation layer',
-    'Post-refund CAC and ROAS normalization',
-    'Cross-platform attribution overlap checks',
-  ],
-  testimonial:
-    'Since deploying CLOZR, we uncovered EUR 40k in hidden attribution errors within 30 days.',
-  testimonialAuthor: '[Founder Name], D2C Brand',
+  certificationsTitle: enDictionary.socialProof.certificationsTitle,
+  certifications: [...enDictionary.socialProof.certifications],
+  testimonial: enDictionary.socialProof.testimonial,
+  testimonialAuthor: enDictionary.socialProof.testimonialAuthor,
 }
 
 function SocialProofSection() {

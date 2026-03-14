@@ -25,6 +25,14 @@ type ApiResponse = {
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0
 
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+
 const readEnvFromLocalFile = (key: string): string => {
   try {
     const envPath = resolve(process.cwd(), '.env.local')
@@ -119,6 +127,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     const resend = new Resend(apiKey)
 
     const subject = `[CLOZR] New contact request from ${payload.name}`
+    const safeName = escapeHtml(payload.name)
+    const safeEmail = escapeHtml(payload.email)
+    const safeCompany = escapeHtml(payload.company || 'N/A')
+    const safeRevenue = escapeHtml(payload.revenue || 'N/A')
+    const safeMessage = escapeHtml(payload.message).replace(/\n/g, '<br/>')
     const details = [
       `Name: ${payload.name}`,
       `Email: ${payload.email}`,
@@ -136,13 +149,55 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       subject,
       text: details,
       html: `
-        <h2>New contact request</h2>
-        <p><strong>Name:</strong> ${payload.name}</p>
-        <p><strong>Email:</strong> ${payload.email}</p>
-        <p><strong>Company:</strong> ${payload.company || 'N/A'}</p>
-        <p><strong>Monthly Revenue:</strong> ${payload.revenue || 'N/A'}</p>
-        <p><strong>Message:</strong></p>
-        <p>${payload.message.replace(/\n/g, '<br/>')}</p>
+        <div style="margin:0;padding:32px 0;background:#06080d;font-family:Satoshi,'Avenir Next','Segoe UI',sans-serif;color:#f6f3ee;">
+          <div style="max-width:680px;margin:0 auto;padding:0 20px;">
+            <div style="border:1px solid rgba(201,154,91,0.22);border-radius:18px;overflow:hidden;background:linear-gradient(142deg,rgba(8,11,17,0.96) 0%,rgba(14,18,27,0.95) 48%,rgba(17,21,29,0.95) 100%);box-shadow:inset 0 1px 0 rgba(246,232,209,0.16),inset 0 -1px 0 rgba(102,74,45,0.44),0 10px 26px rgba(0,0,0,0.4);">
+              <div style="padding:28px 28px 22px;background:
+                radial-gradient(90% 75% at 12% 10%, rgba(216,170,99,0.18) 0%, transparent 72%),
+                radial-gradient(85% 85% at 88% 14%, rgba(120,165,255,0.16) 0%, transparent 74%);">
+                <div style="display:inline-block;padding:7px 12px;border-radius:999px;border:1px solid rgba(216,170,99,0.35);background:rgba(216,170,99,0.08);font-size:12px;letter-spacing:0.18em;color:#d8aa63;">
+                  CLOZR CONTACT
+                </div>
+                <h1 style="margin:18px 0 8px;font-size:30px;line-height:1.08;font-weight:600;color:#f6f3ee;">
+                  New inbound lead
+                </h1>
+                <p style="margin:0;font-size:16px;line-height:1.7;color:#ddd7cc;">
+                  A new contact request has been submitted through the CLOZR website.
+                </p>
+              </div>
+
+              <div style="padding:0 28px 28px;">
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;">
+                  <div style="padding:16px;border:1px solid rgba(201,154,91,0.16);border-radius:14px;background:rgba(8,11,17,0.72);">
+                    <div style="font-size:11px;letter-spacing:0.16em;color:#a69f93;margin-bottom:6px;">NAME</div>
+                    <div style="font-size:16px;line-height:1.5;color:#f6f3ee;">${safeName}</div>
+                  </div>
+                  <div style="padding:16px;border:1px solid rgba(201,154,91,0.16);border-radius:14px;background:rgba(8,11,17,0.72);">
+                    <div style="font-size:11px;letter-spacing:0.16em;color:#a69f93;margin-bottom:6px;">EMAIL</div>
+                    <div style="font-size:16px;line-height:1.5;color:#f6f3ee;">${safeEmail}</div>
+                  </div>
+                  <div style="padding:16px;border:1px solid rgba(201,154,91,0.16);border-radius:14px;background:rgba(8,11,17,0.72);">
+                    <div style="font-size:11px;letter-spacing:0.16em;color:#a69f93;margin-bottom:6px;">COMPANY</div>
+                    <div style="font-size:16px;line-height:1.5;color:#f6f3ee;">${safeCompany}</div>
+                  </div>
+                  <div style="padding:16px;border:1px solid rgba(201,154,91,0.16);border-radius:14px;background:rgba(8,11,17,0.72);">
+                    <div style="font-size:11px;letter-spacing:0.16em;color:#a69f93;margin-bottom:6px;">MONTHLY REVENUE</div>
+                    <div style="font-size:16px;line-height:1.5;color:#f6f3ee;">${safeRevenue}</div>
+                  </div>
+                </div>
+
+                <div style="padding:18px 18px 20px;border:1px solid rgba(201,154,91,0.16);border-radius:16px;background:rgba(8,11,17,0.72);">
+                  <div style="font-size:11px;letter-spacing:0.16em;color:#a69f93;margin-bottom:10px;">MESSAGE</div>
+                  <div style="font-size:16px;line-height:1.7;color:#ddd7cc;">${safeMessage}</div>
+                </div>
+
+                <div style="margin-top:18px;padding-top:18px;border-top:1px solid rgba(201,154,91,0.12);font-size:13px;line-height:1.6;color:#a69f93;">
+                  Reply directly to this email to answer ${safeName}.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       `,
     })
 

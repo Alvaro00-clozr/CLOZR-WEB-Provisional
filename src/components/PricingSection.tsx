@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { Check } from 'lucide-react'
 import { useGsapReveal } from '../hooks/useGsapReveal'
+import enDictionary from '../i18n/en'
 
 type PricingPlan = {
   name: string
@@ -14,51 +15,37 @@ type PricingPlan = {
 }
 
 const pricingCopy = {
-  eyebrow: 'PRICING',
-  support: 'SaaS + Consulting',
-  headline: 'Choose the operating layer for your next stage of growth.',
+  eyebrow: enDictionary.pricing.eyebrow,
+  support: enDictionary.pricing.support,
+  headline: enDictionary.pricing.headline,
+  popularBadge: enDictionary.pricing.popularBadge,
   plans: [
     {
-      name: 'Starter',
-      price: 'EUR 225/mo',
-      subtitle: 'For emerging brands.',
-      description: 'Core CLOZR SaaS stack to align ad data with real bank outcomes.',
-      features: [
-        'Real-time reconciliation dashboard',
-        'Revenue and margin visibility by channel',
-        'Refund-aware CAC and ROAS tracking',
-        'Monthly model health checks',
-      ],
-      ctaLabel: 'Start with Starter',
+      name: enDictionary.pricing.plans.starter.name,
+      price: enDictionary.pricing.plans.starter.price,
+      subtitle: enDictionary.pricing.plans.starter.subtitle,
+      description: enDictionary.pricing.plans.starter.description,
+      features: [...enDictionary.pricing.plans.starter.features],
+      ctaLabel: enDictionary.pricing.plans.starter.cta,
       ctaHref: '#',
     },
     {
-      name: 'Professional',
-      price: 'EUR 450/mo',
-      subtitle: 'For scaling operations.',
-      description: 'Advanced analytics and deeper controls for multi-channel growth teams.',
-      features: [
-        'Everything in Starter',
-        'Attribution overlap diagnostics',
-        'Automated anomaly and leak alerts',
-        'Priority support and strategy reviews',
-      ],
-      ctaLabel: 'Choose Professional',
+      name: enDictionary.pricing.plans.professional.name,
+      price: enDictionary.pricing.plans.professional.price,
+      subtitle: enDictionary.pricing.plans.professional.subtitle,
+      description: enDictionary.pricing.plans.professional.description,
+      features: [...enDictionary.pricing.plans.professional.features],
+      ctaLabel: enDictionary.pricing.plans.professional.cta,
       ctaHref: '#',
       isPopular: true,
     },
     {
-      name: 'Growth Partner',
-      price: 'Custom Pricing',
-      subtitle: 'For ambitious brands ready to dominate.',
-      description: 'Enterprise SaaS access with RevOps consulting and a dedicated growth team.',
-      features: [
-        'Enterprise CLOZR configuration',
-        'RevOps consulting and implementation',
-        'Dedicated strategic partner team',
-        'Bespoke growth system design',
-      ],
-      ctaLabel: 'Talk to a Partner',
+      name: enDictionary.pricing.plans.growthPartner.name,
+      price: enDictionary.pricing.plans.growthPartner.price,
+      subtitle: enDictionary.pricing.plans.growthPartner.subtitle,
+      description: enDictionary.pricing.plans.growthPartner.description,
+      features: [...enDictionary.pricing.plans.growthPartner.features],
+      ctaLabel: enDictionary.pricing.plans.growthPartner.cta,
       ctaHref: '#',
     },
   ] satisfies PricingPlan[],
@@ -155,7 +142,7 @@ function PricingSection() {
                     </div>
                     {plan.isPopular ? (
                       <span className="caption inline-flex rounded-[999px] border border-[color-mix(in_srgb,var(--brand-warning)_62%,transparent)] bg-[color-mix(in_srgb,var(--brand-warning)_16%,transparent)] px-3 py-1 tracking-[0.08em] text-[color-mix(in_srgb,var(--brand-warning)_88%,var(--text-primary)_12%)]">
-                        Popular
+                        {pricingCopy.popularBadge}
                       </span>
                     ) : null}
                   </div>

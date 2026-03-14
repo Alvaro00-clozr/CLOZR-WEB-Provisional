@@ -5,24 +5,23 @@ import { GraphicComponent, GridComponent, TooltipComponent } from 'echarts/compo
 import { CanvasRenderer } from 'echarts/renderers'
 import type { EChartsOption } from 'echarts'
 import { useGsapReveal } from '../hooks/useGsapReveal'
+import enDictionary from '../i18n/en'
 
 echarts.use([BarChart, LineChart, GridComponent, GraphicComponent, TooltipComponent, CanvasRenderer])
 
 const attributionSectionCopy = {
-  eyebrow: 'THE ATTRIBUTION ILLUSION',
-  titleLine: 'According to market data,',
-  titlePrefix: 'you are',
-  titleHighlight: 'losing up to 30%',
-  titleSuffix: 'of your margins',
-  paragraphs: [
-    'Ad platforms claim conversions. Your bank account tells a different story.',
-    'Between iOS updates, attribution overlaps, refunds, and failed payments, relying on Meta or Google dashboards is burning your flow.',
-  ],
-  chartBadge: '30%',
-  chartLabelClaimedLine1: 'Platform Claimed',
-  chartLabelClaimedLine2: 'Revenue',
-  chartLabelBankLine1: 'Actual Bank',
-  chartLabelBankLine2: 'Deposit',
+  eyebrow: enDictionary.attribution.eyebrow,
+  titleLine: enDictionary.attribution.titleLine,
+  titlePrefix: enDictionary.attribution.titlePrefix,
+  titleHighlight: enDictionary.attribution.titleHighlight,
+  titleSuffix: enDictionary.attribution.titleSuffix,
+  paragraphs: [...enDictionary.attribution.paragraphs],
+  chartBadge: enDictionary.attribution.chart.badge,
+  chartLabelClaimedLine1: enDictionary.attribution.chart.labels.claimedLine1,
+  chartLabelClaimedLine2: enDictionary.attribution.chart.labels.claimedLine2,
+  chartLabelBankLine1: enDictionary.attribution.chart.labels.bankLine1,
+  chartLabelBankLine2: enDictionary.attribution.chart.labels.bankLine2,
+  chartAriaLabel: enDictionary.attribution.chart.ariaLabel,
 }
 
 type AttributionComparisonChartProps = {
@@ -31,6 +30,7 @@ type AttributionComparisonChartProps = {
   chartLabelClaimedLine2: string
   chartLabelBankLine1: string
   chartLabelBankLine2: string
+  chartAriaLabel: string
 }
 
 function AttributionComparisonChart({
@@ -39,6 +39,7 @@ function AttributionComparisonChart({
   chartLabelClaimedLine2,
   chartLabelBankLine1,
   chartLabelBankLine2,
+  chartAriaLabel,
 }: AttributionComparisonChartProps) {
   const chartRef = useRef<HTMLDivElement | null>(null)
   const claimedValue = 100
@@ -339,7 +340,7 @@ function AttributionComparisonChart({
       <div
         ref={chartRef}
         role="img"
-        aria-label="Revenue attribution comparison chart"
+        aria-label={chartAriaLabel}
         className="block aspect-square w-full"
       />
     </div>
@@ -437,6 +438,7 @@ function AttributionSection() {
                   }
                   chartLabelBankLine1={attributionSectionCopy.chartLabelBankLine1}
                   chartLabelBankLine2={attributionSectionCopy.chartLabelBankLine2}
+                  chartAriaLabel={attributionSectionCopy.chartAriaLabel}
                 />
               </div>
             </div>

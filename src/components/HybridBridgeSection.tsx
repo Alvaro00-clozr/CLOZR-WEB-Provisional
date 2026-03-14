@@ -1,13 +1,14 @@
 import { useCallback } from 'react'
 import { useGsapReveal } from '../hooks/useGsapReveal'
+import enDictionary from '../i18n/en'
 
 const hybridBridgeCopy = {
-  eyebrow: 'CLOZR ADVISORY',
-  titleLine1: 'Software built for operators.',
-  titleLine2: 'Implemented by Growth Partners.',
-  body: 'Need more than just data? Our in-house RevOps team acts as your strategic partner. We audit your infrastructure, implement the CLOZR system, and build bespoke growth systems to scale your operations.',
-  ctaLabel: 'Apply for Partnership',
-  ctaSupport: 'Application-only for high-ticket D2C operators.',
+  eyebrow: enDictionary.advisory.eyebrow,
+  titleLine1: enDictionary.advisory.titleLine1,
+  titleLine2: enDictionary.advisory.titleLine2,
+  body: enDictionary.advisory.body,
+  ctaLabel: enDictionary.advisory.ctaLabel,
+  ctaSupport: enDictionary.advisory.ctaSupport,
 }
 
 function HybridBridgeSection() {
