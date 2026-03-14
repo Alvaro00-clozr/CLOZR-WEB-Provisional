@@ -129,10 +129,10 @@ function PricingSection() {
               <article
                 key={plan.name}
                 data-reveal-visual
-                className={`relative isolate overflow-hidden rounded-[var(--radius-lg)] p-5 sm:p-6 ${
+                className={`relative isolate h-full overflow-hidden rounded-[var(--radius-lg)] p-5 transition-all duration-300 ease-out sm:p-6 ${
                   plan.isPopular
-                    ? 'widget-premium-border bg-[color-mix(in_srgb,var(--bg-card)_94%,transparent)]'
-                    : 'border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] shadow-[0_16px_34px_rgba(0,0,0,0.34)]'
+                    ? 'widget-premium-border bg-[color-mix(in_srgb,var(--bg-card)_94%,transparent)] lg:-translate-y-3 lg:scale-[1.03] lg:hover:scale-[1.04]'
+                    : 'border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] shadow-[0_16px_34px_rgba(0,0,0,0.34)] lg:w-[94%] lg:justify-self-center lg:translate-y-3 lg:scale-[0.94] lg:opacity-90 lg:hover:scale-[0.97] lg:hover:opacity-100'
                 }`}
               >
                 <div
@@ -145,7 +145,7 @@ function PricingSection() {
                   }}
                 />
 
-                <div className="relative">
+                <div className="relative flex h-full flex-col">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="font-[var(--font-heading)] text-[1.7rem] leading-[1.05] text-[var(--text-primary)]">
@@ -165,17 +165,19 @@ function PricingSection() {
                   </p>
                   <p className="body mt-4 text-[var(--text-secondary)]">{plan.description}</p>
 
-                  <ul className="mt-6 space-y-2.5">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2.5">
-                        <Check
-                          size={16}
-                          className="mt-1 shrink-0 text-[color-mix(in_srgb,var(--brand-warning)_84%,var(--text-primary)_16%)]"
-                        />
-                        <span className="body text-[var(--text-secondary)]">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="mt-6 flex-1">
+                    <ul className="space-y-2.5">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-2.5">
+                          <Check
+                            size={16}
+                            className="mt-1 shrink-0 text-[color-mix(in_srgb,var(--brand-warning)_84%,var(--text-primary)_16%)]"
+                          />
+                          <span className="body text-[var(--text-secondary)]">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
                   <a
                     href={plan.ctaHref}

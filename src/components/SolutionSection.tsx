@@ -98,7 +98,7 @@ function SolutionSection() {
               <article
                 key={`${card.titleLine1}-${card.titleLine2}`}
                 data-reveal-visual
-                className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_92%,transparent)] p-5 shadow-[0_16px_34px_rgba(0,0,0,0.36)]"
+                className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_92%,transparent)] p-5 shadow-[0_16px_34px_rgba(0,0,0,0.36)] transition-transform duration-300 ease-out hover:-translate-y-1"
               >
                 <div
                   aria-hidden="true"

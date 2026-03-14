@@ -86,7 +86,7 @@ function SocialProofSection() {
           <div className="mt-12 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
             <article
               data-reveal-visual
-              className="widget-premium-border relative isolate overflow-hidden rounded-[var(--radius-lg)] bg-[color-mix(in_srgb,var(--bg-card)_92%,transparent)] p-5 sm:p-6"
+              className="widget-premium-border relative isolate overflow-hidden rounded-[var(--radius-lg)] bg-[color-mix(in_srgb,var(--bg-card)_92%,transparent)] p-5 transition-transform duration-300 ease-out hover:-translate-y-1 sm:p-6"
             >
               <div
                 aria-hidden="true"
@@ -104,12 +104,12 @@ function SocialProofSection() {
                   {socialProofCopy.integrations.map((integration) => (
                     <div
                       key={integration.name}
-                      className="flex h-14 items-center justify-center rounded-[12px] border border-[color-mix(in_srgb,var(--text-muted)_20%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_76%,transparent)] opacity-55 saturate-0 transition-opacity duration-200 hover:opacity-75"
+                      className="group flex h-14 items-center justify-center rounded-[12px] border border-[color-mix(in_srgb,var(--text-muted)_20%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_76%,transparent)] opacity-55 saturate-0 transition-all duration-300 hover:opacity-75 hover:saturate-100"
                     >
                       <img
                         src={integration.src}
                         alt={integration.name}
-                        className="max-h-7 w-auto object-contain grayscale"
+                        className="max-h-7 w-auto object-contain grayscale transition-all duration-300 group-hover:grayscale-0"
                         loading="lazy"
                       />
                     </div>
@@ -120,7 +120,7 @@ function SocialProofSection() {
 
             <article
               data-reveal-visual
-              className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] p-5 shadow-[0_16px_34px_rgba(0,0,0,0.34)] sm:p-6"
+              className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] p-5 shadow-[0_16px_34px_rgba(0,0,0,0.34)] transition-transform duration-300 ease-out hover:-translate-y-1 sm:p-6"
             >
               <div
                 aria-hidden="true"
@@ -151,7 +151,7 @@ function SocialProofSection() {
 
           <article
             data-reveal-visual
-            className="widget-premium-border relative isolate mt-4 overflow-hidden rounded-[var(--radius-lg)] bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] p-6 sm:p-7"
+            className="widget-premium-border relative isolate mt-4 overflow-hidden rounded-[var(--radius-lg)] bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] p-6 transition-transform duration-300 ease-out hover:-translate-y-1 sm:p-7"
           >
             <div
               aria-hidden="true"
