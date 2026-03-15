@@ -2,6 +2,7 @@ import { memo, useCallback, useState, type ChangeEvent, type FormEvent } from 'r
 import { Mail, MessageSquareText } from 'lucide-react'
 import { useGsapReveal } from '../hooks/useGsapReveal'
 import enDictionary from '../i18n/en'
+import { trackGenerateLead } from '../lib/analytics'
 
 const FORM_LIMITS = {
   nameMax: 80,
@@ -252,6 +253,13 @@ function ContactSection() {
           errorPayload?.error || `Request failed with status ${response.status}`,
         )
       }
+
+      trackGenerateLead({
+        lead_source: 'website_contact_form',
+        form_id: 'contact',
+        revenue_range: payload.revenue || 'not_selected',
+        has_company: Boolean(payload.company),
+      })
 
       form.reset()
       setFormResetKey((current) => current + 1)
