@@ -131,6 +131,20 @@ function HeroSection() {
     >
       <img
         aria-hidden="true"
+        src="/assets/planet.png"
+        alt={copy.backgroundAlt}
+        className="hero-bg-image pointer-events-none absolute inset-0 z-0 block h-full w-full select-none object-cover object-bottom md:hidden"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 z-0 md:hidden"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(3, 5, 9, 0.78) 0%, rgba(4, 6, 10, 0.58) 30%, rgba(5, 7, 12, 0.18) 54%, rgba(6, 8, 13, 0) 76%), radial-gradient(88% 54% at 50% 24%, rgba(4, 6, 10, 0.4) 0%, rgba(4, 6, 10, 0.14) 44%, transparent 74%)',
+        }}
+      />
+      <img
+        aria-hidden="true"
         src="/assets/bg_hero.png"
         alt={copy.backgroundAlt}
         className="hero-bg-image pointer-events-none hidden h-auto w-full select-none md:block"
