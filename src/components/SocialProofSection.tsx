@@ -144,6 +144,7 @@ function SocialProofSection() {
             </article>
           </div>
 
+          {/*
           <article
             data-reveal-visual
             className="widget-premium-border relative isolate mt-4 overflow-hidden rounded-[var(--radius-lg)] bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] p-6 transition-transform duration-300 ease-out hover:-translate-y-1 sm:p-7"
@@ -169,6 +170,7 @@ function SocialProofSection() {
               </p>
             </div>
           </article>
+          */}
         </div>
       </div>
     </section>
