@@ -177,22 +177,24 @@ function HeroSection() {
               className="mx-auto mt-8 flex w-full max-w-[860px] flex-col items-center justify-center gap-4 sm:mt-10 sm:max-w-none sm:flex-row sm:gap-4"
             >
               <a
-                href="#"
+                href="/#contact"
                 className="btn-gradient body-lg inline-flex h-14 w-full items-center justify-center gap-2 px-6 sm:w-auto sm:min-w-[250px] sm:px-7"
               >
                 <span>{copy.primaryCta}</span>
               </a>
 
-              <a
-                href="#"
-                className="body-lg inline-flex h-14 w-full items-center justify-center gap-3 rounded-[var(--radius-lg)] widget-premium-border px-6 text-[var(--text-primary)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] hover:text-[var(--text-primary)] sm:w-auto sm:min-w-[220px] sm:px-7"
+              <button
+                type="button"
+                disabled
+                aria-disabled="true"
+                className="body-lg inline-flex h-14 w-full cursor-not-allowed items-center justify-center gap-3 rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_72%,transparent)] px-6 text-[var(--text-muted)] opacity-85 sm:w-auto sm:min-w-[220px] sm:px-7"
               >
                 <span
                   aria-hidden="true"
-                  className="inline-block h-0 w-0 border-y-[7px] border-y-transparent border-l-[11px] border-l-[var(--text-secondary)]"
+                  className="inline-block h-0 w-0 border-y-[7px] border-y-transparent border-l-[11px] border-l-[var(--text-muted)]"
                 />
                 <span>{copy.secondaryCta}</span>
-              </a>
+              </button>
             </div>
           </div>
         </div>

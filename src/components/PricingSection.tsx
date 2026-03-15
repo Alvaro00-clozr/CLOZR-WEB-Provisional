@@ -27,7 +27,7 @@ const pricingCopy = {
       description: enDictionary.pricing.plans.starter.description,
       features: [...enDictionary.pricing.plans.starter.features],
       ctaLabel: enDictionary.pricing.plans.starter.cta,
-      ctaHref: '#',
+      ctaHref: '/#contact',
     },
     {
       name: enDictionary.pricing.plans.professional.name,
@@ -36,7 +36,7 @@ const pricingCopy = {
       description: enDictionary.pricing.plans.professional.description,
       features: [...enDictionary.pricing.plans.professional.features],
       ctaLabel: enDictionary.pricing.plans.professional.cta,
-      ctaHref: '#',
+      ctaHref: '/#contact',
       isPopular: true,
     },
     {
@@ -46,7 +46,7 @@ const pricingCopy = {
       description: enDictionary.pricing.plans.growthPartner.description,
       features: [...enDictionary.pricing.plans.growthPartner.features],
       ctaLabel: enDictionary.pricing.plans.growthPartner.cta,
-      ctaHref: '#',
+      ctaHref: '/#contact',
     },
   ] satisfies PricingPlan[],
 }

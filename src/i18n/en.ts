@@ -19,7 +19,7 @@ export const enDictionary = {
       contact: 'Contact',
     },
     cta: {
-      getStarted: 'Get Started',
+      getStarted: 'GO CLOZR',
     },
   },
   hero: {

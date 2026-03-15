@@ -86,8 +86,8 @@ function HybridBridgeSection() {
                   {hybridBridgeCopy.ctaSupport}
                 </p>
                 <a
-                  href="#"
-                  className="btn-gradient body-lg mt-5 inline-flex h-14 w-full items-center justify-center px-6 text-center"
+                  href="/#contact"
+                  className="btn-gradient body-lg p-1 mt-5 inline-flex w-full items-center justify-center px-8 text-center sm:px-10"
                 >
                   {hybridBridgeCopy.ctaLabel}
                 </a>
