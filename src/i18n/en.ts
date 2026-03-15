@@ -226,6 +226,7 @@ export const enDictionary = {
     social: {
       linkedIn: 'LinkedIn',
       x: 'X',
+      instagram: 'Instagram',
       email: 'Email',
     },
   },

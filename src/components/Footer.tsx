@@ -1,3 +1,4 @@
+import { Instagram } from 'lucide-react'
 import enDictionary from '../i18n/en'
 
 const copy = enDictionary.footer
@@ -21,10 +22,29 @@ const footerColumns = [
 ]
 
 const socialLinks = [
-  { label: copy.social.linkedIn, href: '#', iconSrc: '/network/LinkedIn.svg' },
-  { label: copy.social.x, href: '#', iconSrc: '/network/X.svg' },
-  { label: copy.social.email, href: 'mailto:hello@clozr.com', iconSrc: '/network/Message.svg' },
-]
+  {
+    label: copy.social.linkedIn,
+    href: 'https://www.linkedin.com/company/clozr-growth-partners/',
+    kind: 'link',
+    iconSrc: '/network/LinkedIn.svg',
+  },
+  {
+    label: copy.social.x,
+    kind: 'disabled',
+    iconSrc: '/network/X.svg',
+  },
+  {
+    label: copy.social.instagram,
+    kind: 'disabled',
+    icon: Instagram,
+  },
+  {
+    label: copy.social.email,
+    href: 'mailto:clozrhq@gmail.com',
+    kind: 'link',
+    iconSrc: '/network/Message.svg',
+  },
+] as const
 
 function Footer() {
   return (
@@ -80,6 +100,31 @@ function Footer() {
 
           <div className="flex items-center justify-center gap-4 md:justify-end">
             {socialLinks.map((item) => {
+              const content = item.iconSrc ? (
+                <img
+                  src={item.iconSrc}
+                  alt={item.label}
+                  className="h-6 w-6"
+                />
+              ) : item.icon ? (
+                <item.icon size={22} />
+              ) : null
+
+              if (item.kind === 'disabled') {
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    aria-label={item.label}
+                    aria-disabled="true"
+                    disabled
+                    className="inline-flex h-14 w-14 cursor-not-allowed items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_20%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_68%,transparent)] text-[var(--text-muted)] opacity-65"
+                  >
+                    {content}
+                  </button>
+                )
+              }
+
               return (
                 <a
                   key={item.label}
@@ -87,11 +132,7 @@ function Footer() {
                   aria-label={item.label}
                   className="inline-flex h-14 w-14 items-center justify-center widget-premium-border transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)]"
                 >
-                  <img
-                    src={item.iconSrc}
-                    alt={item.label}
-                    className="h-6 w-6"
-                  />
+                  {content}
                 </a>
               )
             })}
