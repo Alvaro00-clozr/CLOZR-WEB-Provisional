@@ -13,6 +13,7 @@ type LegalPageProps = {
   title: string
   seoTitle: string
   seoDescription: string
+  seoPath: string
   eyebrow: string
   intro: string
   lastUpdatedLabel: string
@@ -24,6 +25,7 @@ function LegalPage({
   title,
   seoTitle,
   seoDescription,
+  seoPath,
   eyebrow,
   intro,
   lastUpdatedLabel,
@@ -33,6 +35,7 @@ function LegalPage({
   usePageSeo({
     title: seoTitle,
     description: seoDescription,
+    path: seoPath,
   })
 
   const shared = enDictionary.legalPages.shared

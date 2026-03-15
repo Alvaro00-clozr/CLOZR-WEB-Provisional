@@ -15,6 +15,7 @@ function HomePage() {
   usePageSeo({
     title: enDictionary.seo.title,
     description: enDictionary.seo.description,
+    path: '/',
   })
 
   return (

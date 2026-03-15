@@ -9,6 +9,7 @@ function PrivacyPage() {
       title={copy.title}
       seoTitle={copy.seoTitle}
       seoDescription={copy.seoDescription}
+      seoPath="/privacy"
       eyebrow={copy.eyebrow}
       intro={copy.intro}
       lastUpdatedLabel={copy.lastUpdatedLabel}
