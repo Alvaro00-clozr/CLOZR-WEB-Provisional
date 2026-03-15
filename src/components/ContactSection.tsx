@@ -1,7 +1,17 @@
-import { useCallback, useState, type FormEvent } from 'react'
+import { memo, useCallback, useState, type ChangeEvent, type FormEvent } from 'react'
 import { Mail, MessageSquareText } from 'lucide-react'
 import { useGsapReveal } from '../hooks/useGsapReveal'
 import enDictionary from '../i18n/en'
+
+const FORM_LIMITS = {
+  nameMax: 80,
+  emailMax: 160,
+  companyMax: 120,
+  messageMin: 10,
+  messageMax: 1200,
+} as const
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const contactCopy = {
   eyebrow: enDictionary.contact.eyebrow,
@@ -23,10 +33,148 @@ const contactCopy = {
     monthlyRevenuePlaceholder: enDictionary.contact.form.monthlyRevenuePlaceholder,
     monthlyRevenueOptions: [...enDictionary.contact.form.monthlyRevenueOptions],
     message: enDictionary.contact.form.message,
+    hints: enDictionary.contact.form.hints,
+    validation: enDictionary.contact.form.validation,
   },
 }
 
+const validatePayload = (payload: {
+  name: string
+  email: string
+  company: string
+  message: string
+}) => {
+  if (!payload.name) return contactCopy.form.validation.nameRequired
+  if (payload.name.length > FORM_LIMITS.nameMax) {
+    return contactCopy.form.validation.nameTooLong
+  }
+  if (!payload.email) return contactCopy.form.validation.emailRequired
+  if (payload.email.length > FORM_LIMITS.emailMax) {
+    return contactCopy.form.validation.emailTooLong
+  }
+  if (!EMAIL_PATTERN.test(payload.email)) {
+    return contactCopy.form.validation.emailInvalid
+  }
+  if (payload.company.length > FORM_LIMITS.companyMax) {
+    return contactCopy.form.validation.companyTooLong
+  }
+  if (!payload.message) return contactCopy.form.validation.messageRequired
+  if (payload.message.length < FORM_LIMITS.messageMin) {
+    return contactCopy.form.validation.messageTooShort
+  }
+  if (payload.message.length > FORM_LIMITS.messageMax) {
+    return contactCopy.form.validation.messageTooLong
+  }
+
+  return ''
+}
+
+type HintProps = {
+  visible: boolean
+  text: string
+}
+
+const FieldHint = memo(function FieldHint({ visible, text }: HintProps) {
+  if (!visible) return null
+
+  return <span className="body-sm text-[var(--text-muted)]">{text}</span>
+})
+
+type ValidatedInputFieldProps = {
+  label: string
+  name: 'name' | 'email' | 'company'
+  hint: string
+  required?: boolean
+  type?: 'text' | 'email'
+  maxLength: number
+  inputMode?: 'text' | 'email'
+  pattern?: string
+  validator: (value: string) => boolean
+}
+
+const ValidatedInputField = memo(function ValidatedInputField({
+  label,
+  name,
+  hint,
+  required = false,
+  type = 'text',
+  maxLength,
+  inputMode,
+  pattern,
+  validator,
+}: ValidatedInputFieldProps) {
+  const [value, setValue] = useState('')
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value)
+  }
+
+  const showHint = !validator(value)
+
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="body-sm text-[var(--text-secondary)]">{label}</span>
+      <input
+        name={name}
+        type={type}
+        required={required}
+        maxLength={maxLength}
+        inputMode={inputMode}
+        pattern={pattern}
+        value={value}
+        onChange={handleChange}
+        className="h-11 rounded-[10px] border border-[color-mix(in_srgb,var(--text-muted)_24%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_78%,transparent)] px-3 text-[var(--text-primary)] outline-none transition-all focus:border-[color-mix(in_srgb,var(--brand-info)_58%,transparent)] focus:shadow-[0_0_0_1px_color-mix(in_srgb,var(--brand-info)_42%,transparent)]"
+      />
+      <FieldHint visible={showHint} text={hint} />
+    </label>
+  )
+})
+
+type ValidatedTextareaFieldProps = {
+  label: string
+  name: 'message'
+  hint: string
+  minLength: number
+  maxLength: number
+  validator: (value: string) => boolean
+}
+
+const ValidatedTextareaField = memo(function ValidatedTextareaField({
+  label,
+  name,
+  hint,
+  minLength,
+  maxLength,
+  validator,
+}: ValidatedTextareaFieldProps) {
+  const [value, setValue] = useState('')
+
+  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setValue(event.target.value)
+  }
+
+  const showHint = !validator(value)
+
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="body-sm text-[var(--text-secondary)]">{label}</span>
+      <textarea
+        name={name}
+        rows={5}
+        required
+        minLength={minLength}
+        maxLength={maxLength}
+        value={value}
+        onChange={handleChange}
+        className="min-h-[132px] rounded-[10px] border border-[color-mix(in_srgb,var(--text-muted)_24%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_78%,transparent)] px-3 py-2.5 text-[var(--text-primary)] outline-none transition-all focus:border-[color-mix(in_srgb,var(--brand-info)_58%,transparent)] focus:shadow-[0_0_0_1px_color-mix(in_srgb,var(--brand-info)_42%,transparent)]"
+      />
+      <FieldHint visible={showHint} text={hint} />
+    </label>
+  )
+})
+
 function ContactSection() {
+  const [formResetKey, setFormResetKey] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [formErrorMessage, setFormErrorMessage] = useState('')
@@ -79,6 +227,14 @@ function ContactSection() {
       message: String(formData.get('message') || '').trim(),
     }
 
+    const validationMessage = validatePayload(payload)
+    if (validationMessage) {
+      setFormErrorMessage(validationMessage)
+      setFormStatus('error')
+      setIsSubmitting(false)
+      return
+    }
+
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -98,6 +254,7 @@ function ContactSection() {
       }
 
       form.reset()
+      setFormResetKey((current) => current + 1)
       setFormStatus('success')
     } catch (error) {
       console.error('Contact form submission error:', error)
@@ -157,37 +314,50 @@ function ContactSection() {
                     'radial-gradient(94% 88% at 10% 8%, color-mix(in srgb, var(--brand-info) 24%, transparent) 0%, transparent 70%), radial-gradient(80% 80% at 88% 14%, color-mix(in srgb, var(--brand-warning) 18%, transparent) 0%, transparent 74%)',
                 }}
               />
-              <form className="relative grid gap-3" onSubmit={handleSubmit} noValidate>
+              <form
+                key={formResetKey}
+                className="relative grid gap-3"
+                onSubmit={handleSubmit}
+                noValidate
+              >
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="flex flex-col gap-1.5">
-                    <span className="body-sm text-[var(--text-secondary)]">{contactCopy.form.fullName}</span>
-                    <input
-                      name="name"
-                      type="text"
-                      required
-                      className="h-11 rounded-[10px] border border-[color-mix(in_srgb,var(--text-muted)_24%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_78%,transparent)] px-3 text-[var(--text-primary)] outline-none transition-all focus:border-[color-mix(in_srgb,var(--brand-info)_58%,transparent)] focus:shadow-[0_0_0_1px_color-mix(in_srgb,var(--brand-info)_42%,transparent)]"
-                    />
-                  </label>
-                  <label className="flex flex-col gap-1.5">
-                    <span className="body-sm text-[var(--text-secondary)]">{contactCopy.form.workEmail}</span>
-                    <input
-                      name="email"
-                      type="email"
-                      required
-                      className="h-11 rounded-[10px] border border-[color-mix(in_srgb,var(--text-muted)_24%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_78%,transparent)] px-3 text-[var(--text-primary)] outline-none transition-all focus:border-[color-mix(in_srgb,var(--brand-info)_58%,transparent)] focus:shadow-[0_0_0_1px_color-mix(in_srgb,var(--brand-info)_42%,transparent)]"
-                    />
-                  </label>
+                  <ValidatedInputField
+                    label={contactCopy.form.fullName}
+                    name="name"
+                    hint={contactCopy.form.hints.fullName}
+                    required
+                    maxLength={FORM_LIMITS.nameMax}
+                    validator={(value) =>
+                      value.length > 0 && value.length <= FORM_LIMITS.nameMax
+                    }
+                  />
+                  <ValidatedInputField
+                    label={contactCopy.form.workEmail}
+                    name="email"
+                    hint={contactCopy.form.hints.workEmail}
+                    type="email"
+                    required
+                    inputMode="email"
+                    maxLength={FORM_LIMITS.emailMax}
+                    pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+                    validator={(value) =>
+                      value.length > 0 &&
+                      value.length <= FORM_LIMITS.emailMax &&
+                      EMAIL_PATTERN.test(value)
+                    }
+                  />
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="flex flex-col gap-1.5">
-                    <span className="body-sm text-[var(--text-secondary)]">{contactCopy.form.company}</span>
-                    <input
-                      name="company"
-                      type="text"
-                      className="h-11 rounded-[10px] border border-[color-mix(in_srgb,var(--text-muted)_24%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_78%,transparent)] px-3 text-[var(--text-primary)] outline-none transition-all focus:border-[color-mix(in_srgb,var(--brand-info)_58%,transparent)] focus:shadow-[0_0_0_1px_color-mix(in_srgb,var(--brand-info)_42%,transparent)]"
-                    />
-                  </label>
+                  <ValidatedInputField
+                    label={contactCopy.form.company}
+                    name="company"
+                    hint={contactCopy.form.hints.company}
+                    maxLength={FORM_LIMITS.companyMax}
+                    validator={(value) =>
+                      value.length > 0 && value.length <= FORM_LIMITS.companyMax
+                    }
+                  />
                   <label className="flex flex-col gap-1.5">
                     <span className="body-sm text-[var(--text-secondary)]">{contactCopy.form.monthlyRevenue}</span>
                     <select
@@ -207,15 +377,17 @@ function ContactSection() {
                   </label>
                 </div>
 
-                <label className="flex flex-col gap-1.5">
-                  <span className="body-sm text-[var(--text-secondary)]">{contactCopy.form.message}</span>
-                  <textarea
-                    name="message"
-                    rows={5}
-                    required
-                    className="min-h-[132px] rounded-[10px] border border-[color-mix(in_srgb,var(--text-muted)_24%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_78%,transparent)] px-3 py-2.5 text-[var(--text-primary)] outline-none transition-all focus:border-[color-mix(in_srgb,var(--brand-info)_58%,transparent)] focus:shadow-[0_0_0_1px_color-mix(in_srgb,var(--brand-info)_42%,transparent)]"
-                  />
-                </label>
+                <ValidatedTextareaField
+                  label={contactCopy.form.message}
+                  name="message"
+                  hint={contactCopy.form.hints.message}
+                  minLength={FORM_LIMITS.messageMin}
+                  maxLength={FORM_LIMITS.messageMax}
+                  validator={(value) =>
+                    value.length >= FORM_LIMITS.messageMin &&
+                    value.length <= FORM_LIMITS.messageMax
+                  }
+                />
 
                 <button
                   type="submit"

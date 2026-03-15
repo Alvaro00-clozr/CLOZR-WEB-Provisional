@@ -180,6 +180,23 @@ export const enDictionary = {
       monthlyRevenuePlaceholder: 'Select range',
       monthlyRevenueOptions: ['0 - 50k', '50k - 200k', '200k - 500k', '500k+'],
       message: 'How can we help?',
+      hints: {
+        fullName: 'Required. Maximum 80 characters.',
+        workEmail: 'Required. Use a valid email address.',
+        company: 'Optional. Maximum 120 characters.',
+        message: 'Required. Between 10 and 1200 characters.',
+      },
+      validation: {
+        nameRequired: 'Please enter your full name.',
+        nameTooLong: 'Full name must be 80 characters or fewer.',
+        emailRequired: 'Please enter your work email.',
+        emailInvalid: 'Please enter a valid email address.',
+        emailTooLong: 'Email must be 160 characters or fewer.',
+        companyTooLong: 'Company name must be 120 characters or fewer.',
+        messageRequired: 'Please tell us how we can help.',
+        messageTooShort: 'Message must be at least 10 characters.',
+        messageTooLong: 'Message must be 1200 characters or fewer.',
+      },
     },
   },
   footer: {

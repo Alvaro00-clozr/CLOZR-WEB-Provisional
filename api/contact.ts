@@ -22,6 +22,16 @@ type ApiResponse = {
   }
 }
 
+const FORM_LIMITS = {
+  nameMax: 80,
+  emailMax: 160,
+  companyMax: 120,
+  messageMin: 10,
+  messageMax: 1200,
+} as const
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0
 
@@ -91,6 +101,32 @@ const normalizePayload = (payload: unknown): ContactPayload | null => {
   }
 }
 
+const validatePayload = (payload: ContactPayload): string => {
+  if (!payload.name) return 'Please enter your full name.'
+  if (payload.name.length > FORM_LIMITS.nameMax) {
+    return 'Full name must be 80 characters or fewer.'
+  }
+  if (!payload.email) return 'Please enter your work email.'
+  if (payload.email.length > FORM_LIMITS.emailMax) {
+    return 'Email must be 160 characters or fewer.'
+  }
+  if (!EMAIL_PATTERN.test(payload.email)) {
+    return 'Please enter a valid email address.'
+  }
+  if ((payload.company || '').length > FORM_LIMITS.companyMax) {
+    return 'Company name must be 120 characters or fewer.'
+  }
+  if (!payload.message) return 'Please tell us how we can help.'
+  if (payload.message.length < FORM_LIMITS.messageMin) {
+    return 'Message must be at least 10 characters.'
+  }
+  if (payload.message.length > FORM_LIMITS.messageMax) {
+    return 'Message must be 1200 characters or fewer.'
+  }
+
+  return ''
+}
+
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
@@ -122,6 +158,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     if (!payload) {
       return res.status(400).json({ error: 'Invalid request payload' })
+    }
+
+    const validationMessage = validatePayload(payload)
+    if (validationMessage) {
+      return res.status(400).json({ error: validationMessage })
     }
 
     const resend = new Resend(apiKey)

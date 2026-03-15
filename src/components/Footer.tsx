@@ -33,9 +33,9 @@ function Footer() {
         <div className="grid gap-8 md:grid-cols-[1.1fr_1fr] md:gap-10">
           <div className="flex justify-center md:justify-start">
             <img
-              src="/brand/logo_text_white.png"
+              src="/brand/logo_white.svg"
               alt={copy.logoAlt}
-              className="w-40"
+              className="h-auto w-[168px] max-w-full shrink-0"
             />
           </div>
 
