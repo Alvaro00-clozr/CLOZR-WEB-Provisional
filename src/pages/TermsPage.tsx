@@ -9,6 +9,7 @@ function TermsPage() {
       title={copy.title}
       seoTitle={copy.seoTitle}
       seoDescription={copy.seoDescription}
+      seoPath="/terms"
       eyebrow={copy.eyebrow}
       intro={copy.intro}
       lastUpdatedLabel={copy.lastUpdatedLabel}
