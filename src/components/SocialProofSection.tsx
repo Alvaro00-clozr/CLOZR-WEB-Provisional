@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { BadgeCheck, Quote } from 'lucide-react'
+import { BadgeCheck } from 'lucide-react'
 import { useGsapReveal } from '../hooks/useGsapReveal'
 import enDictionary from '../i18n/en'
 
