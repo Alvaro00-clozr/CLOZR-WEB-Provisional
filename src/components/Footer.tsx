@@ -1,4 +1,4 @@
-import { Instagram } from 'lucide-react'
+import { Instagram, type LucideIcon } from 'lucide-react'
 import enDictionary from '../i18n/en'
 
 const copy = enDictionary.footer
@@ -21,7 +21,22 @@ const footerColumns = [
   },
 ]
 
-const socialLinks = [
+type SocialLink =
+  | {
+      label: string
+      kind: 'link'
+      href: string
+      iconSrc?: string
+      icon?: LucideIcon
+    }
+  | {
+      label: string
+      kind: 'disabled'
+      iconSrc?: string
+      icon?: LucideIcon
+    }
+
+const socialLinks: SocialLink[] = [
   {
     label: copy.social.linkedIn,
     href: 'https://www.linkedin.com/company/clozr-growth-partners/',
@@ -44,7 +59,7 @@ const socialLinks = [
     kind: 'link',
     iconSrc: '/network/Message.svg',
   },
-] as const
+]
 
 function Footer() {
   return (
@@ -100,14 +115,15 @@ function Footer() {
 
           <div className="flex items-center justify-center gap-4 md:justify-end">
             {socialLinks.map((item) => {
+              const Icon = item.icon
               const content = item.iconSrc ? (
                 <img
                   src={item.iconSrc}
                   alt={item.label}
                   className="h-6 w-6"
                 />
-              ) : item.icon ? (
-                <item.icon size={22} />
+              ) : Icon ? (
+                <Icon size={22} />
               ) : null
 
               if (item.kind === 'disabled') {
