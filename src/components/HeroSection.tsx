@@ -145,7 +145,7 @@ function HeroSection() {
       />
       <img
         aria-hidden="true"
-        src="/assets/bg_hero.png"
+        src="/assets/bg-hero.jpeg"
         alt={copy.backgroundAlt}
         className="hero-bg-image pointer-events-none hidden h-auto w-full select-none md:block"
       />
@@ -179,7 +179,7 @@ function HeroSection() {
 
             <p
               data-reveal-text
-              className="mx-auto mt-10 max-w-[860px] text-[clamp(1rem,4.8vw,1.25rem)] leading-[1.5] text-[var(--text-secondary)] md:body-lg"
+              className="mx-auto mt-10 max-w-[860px] text-[clamp(1rem,4.8vw,1.25rem)] leading-[1.5] text-[var(--text-primary)] md:body-lg"
             >
               {copy.descriptionLine1}
               <br />
