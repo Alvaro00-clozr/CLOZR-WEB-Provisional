@@ -36,6 +36,14 @@ function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+function isSmallViewport() {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  return window.matchMedia('(max-width: 767px)').matches
+}
+
 export function useGsapReveal<T extends HTMLElement>(options: RevealOptions) {
   const [rootEl, setRootEl] = useState<T | null>(null)
   const rootRef = useCallback((node: T | null) => {
@@ -44,7 +52,7 @@ export function useGsapReveal<T extends HTMLElement>(options: RevealOptions) {
 
   useLayoutEffect(() => {
     const sectionRoot = rootEl
-    if (!sectionRoot || prefersReducedMotion()) {
+    if (!sectionRoot || prefersReducedMotion() || isSmallViewport()) {
       return
     }
 

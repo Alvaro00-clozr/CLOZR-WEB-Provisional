@@ -137,13 +137,19 @@ function HeroSection() {
         aria-hidden="true"
         className="hero-bg-image pointer-events-none absolute inset-0 z-0 block h-full w-full select-none"
       >
+        <source
+          media="(max-width: 767px)"
+          srcSet="/assets/planet-mobile.jpg 1x, /assets/planet-mobile@2x.jpg 2x"
+          type="image/jpeg"
+        />
         <source media="(min-width: 768px)" srcSet="/assets/bg-hero.jpeg" />
         <img
-          src="/assets/planet.png"
+          src="/assets/planet-mobile.jpg"
           alt={copy.backgroundAlt}
-          width={1024}
-          height={1024}
-          decoding="async"
+          width={720}
+          height={720}
+          decoding="sync"
+          loading="eager"
           fetchPriority="high"
           className="block h-full w-full object-cover object-bottom"
         />
