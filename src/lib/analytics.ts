@@ -1,6 +1,8 @@
 type GtagPrimitive = string | number | boolean
 
 type GtagParams = Record<string, GtagPrimitive | undefined>
+const GA_MEASUREMENT_ID = 'G-LS76PCN9J5'
+let analyticsInitScheduled = false
 
 declare global {
   interface Window {
@@ -15,6 +17,52 @@ declare global {
 
 const isGtagAvailable = () =>
   typeof window !== 'undefined' && typeof window.gtag === 'function'
+
+const ensureGtagStub = () => {
+  if (typeof window === 'undefined') return
+
+  window.dataLayer = window.dataLayer || []
+  if (!window.gtag) {
+    window.gtag = (command, target, params) => {
+      window.dataLayer?.push([command, target, params])
+    }
+  }
+}
+
+const loadGtagScript = () => {
+  if (typeof window === 'undefined') return
+  if (document.querySelector(`script[data-ga-id="${GA_MEASUREMENT_ID}"]`)) return
+
+  const script = document.createElement('script')
+  script.async = true
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`
+  script.setAttribute('data-ga-id', GA_MEASUREMENT_ID)
+  document.head.appendChild(script)
+}
+
+export const initAnalytics = () => {
+  if (typeof window === 'undefined' || analyticsInitScheduled) return
+
+  analyticsInitScheduled = true
+
+  const bootAnalytics = () => {
+    ensureGtagStub()
+    window.gtag?.('js', new Date())
+    window.gtag?.('config', GA_MEASUREMENT_ID)
+    loadGtagScript()
+  }
+
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(() => {
+      bootAnalytics()
+    }, { timeout: 3000 })
+    return
+  }
+
+  window.setTimeout(() => {
+    bootAnalytics()
+  }, 1500)
+}
 
 export const trackEvent = (eventName: string, params?: GtagParams) => {
   if (!isGtagAvailable()) return

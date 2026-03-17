@@ -1,8 +1,23 @@
 import { useCallback, useLayoutEffect, useState } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-gsap.registerPlugin(ScrollTrigger)
+type GsapInstance = (typeof import('gsap'))['gsap']
+
+let gsapWithScrollTriggerPromise: Promise<GsapInstance> | null = null
+
+async function loadGsapWithScrollTrigger() {
+  if (!gsapWithScrollTriggerPromise) {
+    gsapWithScrollTriggerPromise = Promise.all([
+      import('gsap'),
+      import('gsap/ScrollTrigger'),
+    ]).then(([gsapModule, scrollTriggerModule]) => {
+      const gsap = gsapModule.gsap
+      gsap.registerPlugin(scrollTriggerModule.ScrollTrigger)
+      return gsap
+    })
+  }
+
+  return gsapWithScrollTriggerPromise
+}
 
 type RevealOptions = {
   itemsSelector: string
@@ -80,150 +95,179 @@ export function useGsapReveal<T extends HTMLElement>(options: RevealOptions) {
       doneClass,
     } = options
 
-    const ctx = gsap.context(() => {
-      const q = gsap.utils.selector(sectionRoot)
-      const selectedItems = q<HTMLElement>(itemsSelector)
-      const items = animateRoot ? [sectionRoot, ...selectedItems] : selectedItems
-      const media = mediaSelector
-        ? sectionRoot.querySelector<HTMLElement>(mediaSelector)
-        : null
-      const afterEl = afterSelector ? q<HTMLElement>(afterSelector)[0] : null
+    let isDisposed = false
+    let revertContext: (() => void) | null = null
 
-      if (items.length === 0 && !media && !afterEl) {
+    const initReveal = async () => {
+      const gsap = await loadGsapWithScrollTrigger()
+
+      if (isDisposed) {
         return
       }
 
-      const hasX = typeof xItems === 'number' && xItems !== 0
-      const hasY = typeof yItems === 'number' && yItems !== 0
+      const ctx = gsap.context(() => {
+        const q = gsap.utils.selector(sectionRoot)
+        const selectedItems = q<HTMLElement>(itemsSelector)
+        const items = animateRoot ? [sectionRoot, ...selectedItems] : selectedItems
+        const media = mediaSelector
+          ? sectionRoot.querySelector<HTMLElement>(mediaSelector)
+          : null
+        const afterEl = afterSelector ? q<HTMLElement>(afterSelector)[0] : null
 
-      gsap.set(items, {
-        autoAlpha: 0,
-        ...(hasX ? { x: xItems } : {}),
-        ...(hasY ? { y: yItems } : {}),
-        willChange: 'transform,opacity',
-        force3D: true,
-      })
+        if (items.length === 0 && !media && !afterEl) {
+          return
+        }
 
-      if (media) {
-        gsap.set(media, {
+        const hasX = typeof xItems === 'number' && xItems !== 0
+        const hasY = typeof yItems === 'number' && yItems !== 0
+
+        gsap.set(items, {
           autoAlpha: 0,
-          x: xMedia,
+          ...(hasX ? { x: xItems } : {}),
+          ...(hasY ? { y: yItems } : {}),
           willChange: 'transform,opacity',
           force3D: true,
         })
-      }
 
-      const tl = gsap.timeline({
-        ...(useScrollTrigger
-          ? {
-              scrollTrigger: {
-                trigger: sectionRoot,
-                start,
-                once,
-                toggleActions,
-                invalidateOnRefresh: true,
-              },
-            }
-          : {}),
-        defaults: { ease: 'power2.out' },
-      })
-
-      const columns = gridColumns ?? 0
-
-      if (!columns || columns <= 1) {
-        tl.to(items, {
-          autoAlpha: 1,
-          ...(hasX ? { x: 0 } : {}),
-          ...(hasY ? { y: 0 } : {}),
-          duration: durationItems,
-          stagger,
-          onComplete: () => {
-            if (doneClass) {
-              sectionRoot.classList.add(doneClass)
-            }
-
-            for (const item of items) {
-              item.style.willChange = ''
-              item.style.transform = ''
-              item.style.opacity = ''
-            }
-          },
-        })
-      } else {
-        for (let i = 0; i < items.length; i += columns) {
-          const row = items.slice(i, i + columns)
-          tl.to(
-            row,
-            {
-              autoAlpha: 1,
-              ...(hasX ? { x: 0 } : {}),
-              ...(hasY ? { y: 0 } : {}),
-              duration: durationItems,
-              stagger: 0.06,
-              onComplete: () => {
-                for (const item of row) {
-                  item.style.willChange = ''
-                  item.style.transform = ''
-                  item.style.opacity = ''
-                }
-              },
-            },
-            i === 0 ? undefined : '+=0.04',
-          )
+        if (media) {
+          gsap.set(media, {
+            autoAlpha: 0,
+            x: xMedia,
+            willChange: 'transform,opacity',
+            force3D: true,
+          })
         }
-      }
 
-      if (media) {
-        tl.to(
-          media,
-          {
+        const tl = gsap.timeline({
+          ...(useScrollTrigger
+            ? {
+                scrollTrigger: {
+                  trigger: sectionRoot,
+                  start,
+                  once,
+                  toggleActions,
+                  invalidateOnRefresh: true,
+                },
+              }
+            : {}),
+          defaults: { ease: 'power2.out' },
+        })
+
+        const columns = gridColumns ?? 0
+
+        if (!columns || columns <= 1) {
+          tl.to(items, {
             autoAlpha: 1,
-            x: 0,
-            duration: durationMedia,
+            ...(hasX ? { x: 0 } : {}),
+            ...(hasY ? { y: 0 } : {}),
+            duration: durationItems,
+            stagger,
             onComplete: () => {
-              media.style.willChange = ''
-              media.style.transform = ''
-              media.style.opacity = ''
+              if (doneClass) {
+                sectionRoot.classList.add(doneClass)
+              }
+
+              for (const item of items) {
+                item.style.willChange = ''
+                item.style.transform = ''
+                item.style.opacity = ''
+              }
             },
-          },
-          overlap,
-        )
-      }
-
-      if (afterEl) {
-        gsap.set(afterEl, {
-          autoAlpha: 0,
-          y: afterY,
-          willChange: 'transform,opacity',
-          force3D: true,
-        })
-
-        const afterAnim: gsap.TweenVars = {
-          autoAlpha: 1,
-          y: 0,
-          duration: afterDuration,
-          ease: 'power2.out',
-          onComplete: () => {
-            afterEl.style.willChange = ''
-            afterEl.style.transform = ''
-            afterEl.style.opacity = ''
-          },
-        }
-
-        if (useScrollTrigger) {
-          afterAnim.scrollTrigger = {
-            trigger: afterEl,
-            start: afterStart,
-            once: afterOnce,
+          })
+        } else {
+          for (let i = 0; i < items.length; i += columns) {
+            const row = items.slice(i, i + columns)
+            tl.to(
+              row,
+              {
+                autoAlpha: 1,
+                ...(hasX ? { x: 0 } : {}),
+                ...(hasY ? { y: 0 } : {}),
+                duration: durationItems,
+                stagger: 0.06,
+                onComplete: () => {
+                  for (const item of row) {
+                    item.style.willChange = ''
+                    item.style.transform = ''
+                    item.style.opacity = ''
+                  }
+                },
+              },
+              i === 0 ? undefined : '+=0.04',
+            )
           }
         }
 
-        gsap.to(afterEl, afterAnim)
+        if (media) {
+          tl.to(
+            media,
+            {
+              autoAlpha: 1,
+              x: 0,
+              duration: durationMedia,
+              onComplete: () => {
+                media.style.willChange = ''
+                media.style.transform = ''
+                media.style.opacity = ''
+              },
+            },
+            overlap,
+          )
+        }
+
+        if (afterEl) {
+          gsap.set(afterEl, {
+            autoAlpha: 0,
+            y: afterY,
+            willChange: 'transform,opacity',
+            force3D: true,
+          })
+
+          const afterAnim: {
+            autoAlpha: number
+            y: number
+            duration: number
+            ease: string
+            onComplete: () => void
+            scrollTrigger?: {
+              trigger: HTMLElement
+              start: string
+              once: boolean
+            }
+          } = {
+            autoAlpha: 1,
+            y: 0,
+            duration: afterDuration,
+            ease: 'power2.out',
+            onComplete: () => {
+              afterEl.style.willChange = ''
+              afterEl.style.transform = ''
+              afterEl.style.opacity = ''
+            },
+          }
+
+          if (useScrollTrigger) {
+            afterAnim.scrollTrigger = {
+              trigger: afterEl,
+              start: afterStart,
+              once: afterOnce,
+            }
+          }
+
+          gsap.to(afterEl, afterAnim)
+        }
+      }, sectionRoot)
+
+      revertContext = () => {
+        ctx.revert()
       }
-    }, sectionRoot)
+    }
+
+    void initReveal()
 
     return () => {
-      ctx.revert()
+      isDisposed = true
+      revertContext?.()
     }
   }, [options, rootEl])
 

@@ -1,7 +1,18 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { gsap } from 'gsap'
 import { useGsapReveal } from '../hooks/useGsapReveal'
 import enDictionary from '../i18n/en'
+
+type GsapInstance = (typeof import('gsap'))['gsap']
+
+let heroGsapPromise: Promise<GsapInstance> | null = null
+
+async function loadHeroGsap() {
+  if (!heroGsapPromise) {
+    heroGsapPromise = import('gsap').then((module) => module.gsap)
+  }
+
+  return heroGsapPromise
+}
 
 const copy = enDictionary.hero
 const rotatingPhrases = [...copy.rotatingPhrases]
@@ -23,80 +34,101 @@ function HeroSection() {
       return
     }
 
+    let isDisposed = false
+    let gsapInstance: GsapInstance | null = null
+    let kickOffId: number | null = null
+    let intervalId: number | null = null
+
     let activeIndex = 0
     currentPhrase.textContent = rotatingPhrases[activeIndex]
     nextPhrase.textContent =
       rotatingPhrases[(activeIndex + 1) % rotatingPhrases.length]
 
-    gsap.set(currentPhrase, {
-      yPercent: 0,
-      rotationX: 0,
-      opacity: 1,
-      transformOrigin: 'bottom center',
-    })
-    gsap.set(nextPhrase, {
-      yPercent: 100,
-      rotationX: -82,
-      opacity: 0,
-      transformOrigin: 'top center',
-    })
-
-    const animateFlip = () => {
-      if (isAnimatingRef.current) {
+    const initAnimation = async () => {
+      const gsap = await loadHeroGsap()
+      if (isDisposed) {
         return
       }
 
-      isAnimatingRef.current = true
-      const incomingIndex = (activeIndex + 1) % rotatingPhrases.length
-      nextPhrase.textContent = rotatingPhrases[incomingIndex]
+      gsapInstance = gsap
 
-      gsap
-        .timeline({
-          onComplete: () => {
-            activeIndex = incomingIndex
-            currentPhrase.textContent = rotatingPhrases[activeIndex]
+      gsap.set(currentPhrase, {
+        yPercent: 0,
+        rotationX: 0,
+        opacity: 1,
+        transformOrigin: 'bottom center',
+      })
+      gsap.set(nextPhrase, {
+        yPercent: 100,
+        rotationX: -82,
+        opacity: 0,
+        transformOrigin: 'top center',
+      })
 
-            gsap.set(currentPhrase, {
+      const animateFlip = () => {
+        if (isAnimatingRef.current || !gsapInstance) {
+          return
+        }
+
+        isAnimatingRef.current = true
+        const incomingIndex = (activeIndex + 1) % rotatingPhrases.length
+        nextPhrase.textContent = rotatingPhrases[incomingIndex]
+
+        gsapInstance
+          .timeline({
+            onComplete: () => {
+              activeIndex = incomingIndex
+              currentPhrase.textContent = rotatingPhrases[activeIndex]
+
+              gsapInstance?.set(currentPhrase, {
+                yPercent: 0,
+                rotationX: 0,
+                opacity: 1,
+              })
+              gsapInstance?.set(nextPhrase, {
+                yPercent: 100,
+                rotationX: -82,
+                opacity: 0,
+              })
+              isAnimatingRef.current = false
+            },
+          })
+          .to(currentPhrase, {
+            duration: 0.82,
+            yPercent: -100,
+            rotationX: 82,
+            opacity: 0,
+            ease: 'power2.in',
+          })
+          .to(
+            nextPhrase,
+            {
+              duration: 0.82,
               yPercent: 0,
               rotationX: 0,
               opacity: 1,
-            })
-            gsap.set(nextPhrase, {
-              yPercent: 100,
-              rotationX: -82,
-              opacity: 0,
-            })
-            isAnimatingRef.current = false
-          },
-        })
-        .to(currentPhrase, {
-          duration: 0.82,
-          yPercent: -100,
-          rotationX: 82,
-          opacity: 0,
-          ease: 'power2.in',
-        })
-        .to(
-          nextPhrase,
-          {
-            duration: 0.82,
-            yPercent: 0,
-            rotationX: 0,
-            opacity: 1,
-            ease: 'power2.out',
-          },
-          0.12,
-        )
+              ease: 'power2.out',
+            },
+            0.12,
+          )
+      }
+
+      kickOffId = window.setTimeout(animateFlip, 1700)
+      intervalId = window.setInterval(animateFlip, 3000)
     }
 
-    const kickOffId = window.setTimeout(animateFlip, 1700)
-    const intervalId = window.setInterval(animateFlip, 3000)
+    void initAnimation()
 
     return () => {
-      window.clearTimeout(kickOffId)
-      window.clearInterval(intervalId)
+      isDisposed = true
+      if (kickOffId !== null) {
+        window.clearTimeout(kickOffId)
+      }
+      if (intervalId !== null) {
+        window.clearInterval(intervalId)
+      }
       isAnimatingRef.current = false
-      gsap.killTweensOf([currentPhrase, nextPhrase])
+      gsapInstance?.killTweensOf([currentPhrase, nextPhrase])
     }
   }, [])
 
@@ -131,7 +163,7 @@ function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[700px] overflow-hidden bg-transparent sm:min-h-[780px] md:min-h-[900px] lg:min-h-[1020px]"
+      className="relative min-h-[700px] overflow-hidden bg-transparent sm:min-h-[780px] md:min-h-[860px] lg:min-h-[960px]"
     >
       <picture
         aria-hidden="true"
@@ -148,7 +180,7 @@ function HeroSection() {
           alt={copy.backgroundAlt}
           width={720}
           height={720}
-          decoding="sync"
+          decoding="async"
           loading="eager"
           fetchPriority="high"
           className="block h-full w-full object-cover object-bottom"
