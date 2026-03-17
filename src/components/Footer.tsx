@@ -68,8 +68,11 @@ function Footer() {
         <div className="grid gap-8 md:grid-cols-[1.1fr_1fr] md:gap-10">
           <div className="flex justify-center md:justify-start">
             <img
-              src="/brand/logo_white.svg"
+              src="/brand/logo_white.png"
               alt={copy.logoAlt}
+              width={352}
+              height={235}
+              decoding="async"
               className="h-auto w-[168px] max-w-full shrink-0"
             />
           </div>
@@ -120,6 +123,9 @@ function Footer() {
                 <img
                   src={item.iconSrc}
                   alt={item.label}
+                  width={24}
+                  height={24}
+                  decoding="async"
                   className="h-6 w-6"
                 />
               ) : Icon ? (

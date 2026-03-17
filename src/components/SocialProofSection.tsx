@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { BadgeCheck, Quote } from 'lucide-react'
+import { BadgeCheck } from 'lucide-react'
 import { useGsapReveal } from '../hooks/useGsapReveal'
 import enDictionary from '../i18n/en'
 
@@ -9,9 +9,24 @@ const socialProofCopy = {
   subcopy: enDictionary.socialProof.subcopy,
   integrationsTitle: enDictionary.socialProof.integrationsTitle,
   integrations: [
-    { name: enDictionary.socialProof.integrations.stripe, src: '/social/stripe_logo.png' },
-    { name: enDictionary.socialProof.integrations.meta, src: '/social/meta_icon.png' },
-    { name: enDictionary.socialProof.integrations.google, src: '/social/google_icon.svg' },
+    {
+      name: enDictionary.socialProof.integrations.stripe,
+      src: '/social/stripe_logo.png',
+      width: 40,
+      height: 18,
+    },
+    {
+      name: enDictionary.socialProof.integrations.meta,
+      src: '/social/meta_icon.png',
+      width: 28,
+      height: 18,
+    },
+    {
+      name: enDictionary.socialProof.integrations.google,
+      src: '/social/google_icon.svg',
+      width: 17,
+      height: 18,
+    },
   ],
   certificationsTitle: enDictionary.socialProof.certificationsTitle,
   certifications: [...enDictionary.socialProof.certifications],
@@ -104,6 +119,9 @@ function SocialProofSection() {
                       <img
                         src={integration.src}
                         alt={integration.name}
+                        width={integration.width}
+                        height={integration.height}
+                        decoding="async"
                         className="max-h-7 w-auto object-contain grayscale transition-all duration-300 group-hover:grayscale-0"
                         loading="lazy"
                       />

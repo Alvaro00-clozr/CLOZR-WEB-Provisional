@@ -178,6 +178,7 @@
 
   html {
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -481,7 +482,7 @@
 body {
   scrollbar-width: thin;
   scrollbar-color: rgba(201, 154, 91, 0.46) rgba(201, 154, 91, 0.14);
-  height: 100vh;
+  min-height: 100%;
 }
 
 /* WebKit (Chrome, Edge, Safari) */

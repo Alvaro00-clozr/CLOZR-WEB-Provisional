@@ -38,8 +38,11 @@ function Header() {
         <a className="h-full inline-flex shrink-0 items-center" href="/#top" aria-label={copy.logoAriaLabel}>
           <img
             className="h-full max-h-[60px] w-auto object-contain"
-            src="/brand/logo_white.svg"
+            src="/brand/logo_white.png"
             alt={copy.logoAlt}
+            width={352}
+            height={235}
+            decoding="async"
           />
         </a>
 

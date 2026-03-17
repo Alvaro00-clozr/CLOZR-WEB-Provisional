@@ -5,6 +5,10 @@ import enDictionary from '../i18n/en'
 
 const copy = enDictionary.hero
 const rotatingPhrases = [...copy.rotatingPhrases]
+const longestRotatingPhrase = rotatingPhrases.reduce(
+  (longestPhrase, phrase) => (phrase.length > longestPhrase.length ? phrase : longestPhrase),
+  rotatingPhrases[0] ?? '',
+)
 
 function HeroSection() {
   const currentPhraseRef = useRef<HTMLSpanElement>(null)
@@ -127,27 +131,30 @@ function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[700px] overflow-hidden bg-transparent sm:min-h-[780px] md:min-h-0"
+      className="relative min-h-[700px] overflow-hidden bg-transparent sm:min-h-[780px] md:min-h-[900px] lg:min-h-[1020px]"
     >
-      <img
+      <picture
         aria-hidden="true"
-        src="/assets/planet.png"
-        alt={copy.backgroundAlt}
-        className="hero-bg-image pointer-events-none absolute inset-0 z-0 block h-full w-full select-none object-cover object-bottom md:hidden"
-      />
+        className="hero-bg-image pointer-events-none absolute inset-0 z-0 block h-full w-full select-none"
+      >
+        <source media="(min-width: 768px)" srcSet="/assets/bg-hero.jpeg" />
+        <img
+          src="/assets/planet.png"
+          alt={copy.backgroundAlt}
+          width={1024}
+          height={1024}
+          decoding="async"
+          fetchPriority="high"
+          className="block h-full w-full object-cover object-bottom"
+        />
+      </picture>
       <div
         aria-hidden="true"
-        className="absolute inset-0 z-0 md:hidden"
+        className="absolute inset-0 z-0"
         style={{
           background:
             'linear-gradient(180deg, rgba(3, 5, 9, 0.78) 0%, rgba(4, 6, 10, 0.58) 30%, rgba(5, 7, 12, 0.18) 54%, rgba(6, 8, 13, 0) 76%), radial-gradient(88% 54% at 50% 24%, rgba(4, 6, 10, 0.4) 0%, rgba(4, 6, 10, 0.14) 44%, transparent 74%)',
         }}
-      />
-      <img
-        aria-hidden="true"
-        src="/assets/bg-hero.jpeg"
-        alt={copy.backgroundAlt}
-        className="hero-bg-image pointer-events-none hidden h-auto w-full select-none md:block"
       />
       <div className="absolute inset-0 z-10">
         <div className="mx-auto w-full max-w-[1120px] px-5 pt-12 sm:px-6 sm:pt-14 md:px-8 md:pt-20">
@@ -160,7 +167,7 @@ function HeroSection() {
               <br />
               <span className="relative mx-auto inline-grid w-[8.2em] align-top text-center text-[var(--brand-warning)] [perspective:1000px] md:w-auto md:whitespace-nowrap">
                 <span aria-hidden="true" className="invisible block md:whitespace-nowrap">
-                  {copy.rotatingPhrases[1]}
+                  {longestRotatingPhrase}
                 </span>
                 <span
                   ref={currentPhraseRef}
