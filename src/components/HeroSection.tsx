@@ -199,23 +199,23 @@ function HeroSection() {
           <div className="mx-auto max-w-[980px] text-center">
             <h1
               data-reveal-text
-              className="font-[var(--font-heading)] text-[clamp(2.05rem,10vw,5rem)] leading-[1.1] text-[var(--text-primary)]"
+              className="mx-auto max-w-[16ch] px-2 font-[var(--font-heading)] text-[clamp(1.5rem,7vw,3rem)] leading-[1.06] text-[var(--text-primary)] sm:max-w-[19ch] sm:px-0 sm:text-[clamp(1.85rem,7.6vw,4.25rem)] sm:leading-[1.1] lg:max-w-none"
             >
               {copy.titleStart}
               <br />
-              <span className="relative mx-auto inline-grid w-[8.2em] align-top text-center text-[var(--brand-warning)] [perspective:1000px] md:w-auto md:whitespace-nowrap">
-                <span aria-hidden="true" className="invisible block md:whitespace-nowrap">
+              <span className="relative mx-auto inline-grid w-[7.8em] align-top text-center text-[var(--brand-warning)] [perspective:1000px] sm:w-[8.4em] lg:w-auto lg:whitespace-nowrap">
+                <span aria-hidden="true" className="invisible block lg:whitespace-nowrap">
                   {longestRotatingPhrase}
                 </span>
                 <span
                   ref={currentPhraseRef}
-                  className="absolute inset-0 block [backface-visibility:hidden] [transform-style:preserve-3d] md:whitespace-nowrap"
+                  className="absolute inset-0 block [backface-visibility:hidden] [transform-style:preserve-3d] lg:whitespace-nowrap"
                 >
                   {copy.rotatingPhrases[0]}
                 </span>
                 <span
                   ref={nextPhraseRef}
-                  className="absolute inset-0 block [backface-visibility:hidden] [transform-style:preserve-3d] md:whitespace-nowrap"
+                  className="absolute inset-0 block [backface-visibility:hidden] [transform-style:preserve-3d] lg:whitespace-nowrap"
                 >
                   {copy.rotatingPhrases[1]}
                 </span>
@@ -224,7 +224,7 @@ function HeroSection() {
 
             <p
               data-reveal-text
-              className="mx-auto mt-10 max-w-[860px] text-[clamp(1rem,4.8vw,1.25rem)] leading-[1.5] text-[var(--text-primary)] md:body-lg"
+              className="mx-auto mt-10 max-w-[34ch] px-2 text-[clamp(0.88rem,3.2vw,1.1rem)] leading-[1.42] text-[var(--text-primary)] sm:max-w-[860px] sm:px-0 md:body-lg"
             >
               {copy.descriptionLine1}
               <br />
