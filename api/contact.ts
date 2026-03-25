@@ -8,11 +8,14 @@ type ContactPayload = {
   company?: string
   revenue?: string
   message: string
+  website?: string
+  startedAt?: string
 }
 
 type ApiRequest = {
   method?: string
   body?: unknown
+  headers?: Record<string, string | string[] | undefined>
 }
 
 type ApiResponse = {
@@ -30,7 +33,26 @@ const FORM_LIMITS = {
   messageMax: 1200,
 } as const
 
+const ANTISPAM_LIMITS = {
+  minSubmitDelayMs: 2500,
+  maxFormLifetimeMs: 1000 * 60 * 60 * 6,
+  rateLimitWindowMs: 1000 * 60 * 10,
+  maxSubmissionsPerWindow: 5,
+} as const
+
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+type RateLimitEntry = {
+  windowStartedAt: number
+  count: number
+}
+
+const rateLimitStore = globalThis as typeof globalThis & {
+  __clozrContactRateLimit?: Map<string, RateLimitEntry>
+}
+const contactRateLimit =
+  rateLimitStore.__clozrContactRateLimit ??
+  (rateLimitStore.__clozrContactRateLimit = new Map<string, RateLimitEntry>())
 
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0
@@ -98,6 +120,8 @@ const normalizePayload = (payload: unknown): ContactPayload | null => {
     company: isNonEmptyString(source.company) ? source.company.trim() : '',
     revenue: isNonEmptyString(source.revenue) ? source.revenue.trim() : '',
     message: source.message.trim(),
+    website: typeof source.website === 'string' ? source.website.trim() : '',
+    startedAt: typeof source.startedAt === 'string' ? source.startedAt.trim() : '',
   }
 }
 
@@ -127,6 +151,56 @@ const validatePayload = (payload: ContactPayload): string => {
   return ''
 }
 
+const getHeaderValue = (
+  headers: ApiRequest['headers'],
+  name: string,
+): string => {
+  if (!headers) return ''
+
+  const value = headers[name] ?? headers[name.toLowerCase()]
+  if (Array.isArray(value)) {
+    return value[0]?.trim() || ''
+  }
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+const getClientIp = (req: ApiRequest): string => {
+  const forwardedFor = getHeaderValue(req.headers, 'x-forwarded-for')
+  if (forwardedFor) {
+    const firstIp = forwardedFor.split(',')[0]?.trim()
+    if (firstIp) return firstIp
+  }
+
+  const realIp = getHeaderValue(req.headers, 'x-real-ip')
+  if (realIp) return realIp
+
+  const cloudflareIp = getHeaderValue(req.headers, 'cf-connecting-ip')
+  if (cloudflareIp) return cloudflareIp
+
+  return 'unknown'
+}
+
+const isRateLimited = (ip: string, now: number): boolean => {
+  const existing = contactRateLimit.get(ip)
+  if (!existing) {
+    contactRateLimit.set(ip, { windowStartedAt: now, count: 1 })
+    return false
+  }
+
+  if (now - existing.windowStartedAt > ANTISPAM_LIMITS.rateLimitWindowMs) {
+    contactRateLimit.set(ip, { windowStartedAt: now, count: 1 })
+    return false
+  }
+
+  if (existing.count >= ANTISPAM_LIMITS.maxSubmissionsPerWindow) {
+    return true
+  }
+
+  existing.count += 1
+  contactRateLimit.set(ip, existing)
+  return false
+}
+
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
@@ -153,11 +227,49 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   try {
+    const now = Date.now()
+    const clientIp = getClientIp(req)
+    if (isRateLimited(clientIp, now)) {
+      res.setHeader(
+        'Retry-After',
+        String(Math.ceil(ANTISPAM_LIMITS.rateLimitWindowMs / 1000)),
+      )
+      return res.status(429).json({
+        error: 'Too many requests. Please wait a few minutes and try again.',
+      })
+    }
+
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body
     const payload = normalizePayload(body)
 
     if (!payload) {
       return res.status(400).json({ error: 'Invalid request payload' })
+    }
+
+    if (payload.website) {
+      return res.status(200).json({ ok: true })
+    }
+
+    if (!payload.startedAt) {
+      return res.status(400).json({ error: 'Invalid request payload' })
+    }
+
+    const startedAt = Number(payload.startedAt)
+    if (!Number.isFinite(startedAt)) {
+      return res.status(400).json({ error: 'Invalid request payload' })
+    }
+
+    const submitDuration = now - startedAt
+    if (submitDuration < ANTISPAM_LIMITS.minSubmitDelayMs) {
+      return res
+        .status(429)
+        .json({ error: 'Please wait a few seconds before sending the form.' })
+    }
+
+    if (submitDuration > ANTISPAM_LIMITS.maxFormLifetimeMs) {
+      return res.status(400).json({
+        error: 'This form expired. Please refresh the page and submit again.',
+      })
     }
 
     const validationMessage = validatePayload(payload)
