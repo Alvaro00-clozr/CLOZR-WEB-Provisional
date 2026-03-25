@@ -176,6 +176,7 @@ const ValidatedTextareaField = memo(function ValidatedTextareaField({
 
 function ContactSection() {
   const [formResetKey, setFormResetKey] = useState(0)
+  const [formStartedAt, setFormStartedAt] = useState(() => Date.now().toString())
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [formErrorMessage, setFormErrorMessage] = useState('')
@@ -226,6 +227,8 @@ function ContactSection() {
       company: String(formData.get('company') || '').trim(),
       revenue: String(formData.get('revenue') || '').trim(),
       message: String(formData.get('message') || '').trim(),
+      website: String(formData.get('website') || '').trim(),
+      startedAt: String(formData.get('startedAt') || '').trim(),
     }
 
     const validationMessage = validatePayload(payload)
@@ -263,6 +266,7 @@ function ContactSection() {
 
       form.reset()
       setFormResetKey((current) => current + 1)
+      setFormStartedAt(Date.now().toString())
       setFormStatus('success')
     } catch (error) {
       console.error('Contact form submission error:', error)
@@ -328,6 +332,16 @@ function ContactSection() {
                 onSubmit={handleSubmit}
                 noValidate
               >
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden opacity-0"
+                />
+                <input type="hidden" name="startedAt" value={formStartedAt} readOnly />
+
                 <div className="grid gap-3 sm:grid-cols-2">
                   <ValidatedInputField
                     label={contactCopy.form.fullName}
