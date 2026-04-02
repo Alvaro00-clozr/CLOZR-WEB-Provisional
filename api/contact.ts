@@ -10,6 +10,7 @@ type ContactPayload = {
   message: string
   website?: string
   startedAt?: string
+  captchaToken?: string
 }
 
 type ApiRequest = {
@@ -29,7 +30,6 @@ const FORM_LIMITS = {
   nameMax: 80,
   emailMax: 160,
   companyMax: 120,
-  messageMin: 10,
   messageMax: 1200,
 } as const
 
@@ -108,8 +108,7 @@ const normalizePayload = (payload: unknown): ContactPayload | null => {
 
   if (
     !isNonEmptyString(source.name) ||
-    !isNonEmptyString(source.email) ||
-    !isNonEmptyString(source.message)
+    !isNonEmptyString(source.email)
   ) {
     return null
   }
@@ -119,9 +118,10 @@ const normalizePayload = (payload: unknown): ContactPayload | null => {
     email: source.email.trim(),
     company: isNonEmptyString(source.company) ? source.company.trim() : '',
     revenue: isNonEmptyString(source.revenue) ? source.revenue.trim() : '',
-    message: source.message.trim(),
+    message: isNonEmptyString(source.message) ? source.message.trim() : '',
     website: typeof source.website === 'string' ? source.website.trim() : '',
     startedAt: typeof source.startedAt === 'string' ? source.startedAt.trim() : '',
+    captchaToken: typeof source.captchaToken === 'string' ? source.captchaToken.trim() : '',
   }
 }
 
@@ -139,10 +139,6 @@ const validatePayload = (payload: ContactPayload): string => {
   }
   if ((payload.company || '').length > FORM_LIMITS.companyMax) {
     return 'Company name must be 120 characters or fewer.'
-  }
-  if (!payload.message) return 'Please tell us how we can help.'
-  if (payload.message.length < FORM_LIMITS.messageMin) {
-    return 'Message must be at least 10 characters.'
   }
   if (payload.message.length > FORM_LIMITS.messageMax) {
     return 'Message must be 1200 characters or fewer.'
@@ -201,6 +197,41 @@ const isRateLimited = (ip: string, now: number): boolean => {
   return false
 }
 
+const verifyTurnstileToken = async (
+  token: string,
+  secret: string,
+  ip: string,
+): Promise<boolean> => {
+  try {
+    const body = new URLSearchParams({
+      secret,
+      response: token,
+    })
+    if (ip && ip !== 'unknown') {
+      body.set('remoteip', ip)
+    }
+
+    const response = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body,
+      },
+    )
+
+    if (!response.ok) return false
+
+    const result = (await response.json()) as { success?: boolean }
+    return Boolean(result.success)
+  } catch (error) {
+    console.error('Turnstile verification error:', error)
+    return false
+  }
+}
+
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
@@ -212,6 +243,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     .split(',')
     .map((email) => email.trim())
     .filter((email) => email.length > 0)
+  const turnstileSecret =
+    process.env.TURNSTILE_SECRET_KEY || readEnvFromLocalFile('TURNSTILE_SECRET_KEY')
 
   if (!apiKey || toEmails.length === 0) {
     const missing = [
@@ -277,6 +310,21 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return res.status(400).json({ error: validationMessage })
     }
 
+    if (turnstileSecret) {
+      if (!payload.captchaToken) {
+        return res.status(400).json({ error: 'Please complete the captcha challenge.' })
+      }
+
+      const isCaptchaValid = await verifyTurnstileToken(
+        payload.captchaToken,
+        turnstileSecret,
+        clientIp,
+      )
+      if (!isCaptchaValid) {
+        return res.status(400).json({ error: 'Captcha verification failed.' })
+      }
+    }
+
     const resend = new Resend(apiKey)
 
     const subject = `[CLOZR] New contact request from ${payload.name}`
@@ -284,7 +332,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     const safeEmail = escapeHtml(payload.email)
     const safeCompany = escapeHtml(payload.company || 'N/A')
     const safeRevenue = escapeHtml(payload.revenue || 'N/A')
-    const safeMessage = escapeHtml(payload.message).replace(/\n/g, '<br/>')
+    const safeMessage = escapeHtml(payload.message || 'N/A').replace(/\n/g, '<br/>')
     const details = [
       `Name: ${payload.name}`,
       `Email: ${payload.email}`,
@@ -292,7 +340,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       `Monthly Revenue: ${payload.revenue || 'N/A'}`,
       '',
       'Message:',
-      payload.message,
+      payload.message || 'N/A',
     ].join('\n')
 
     await resend.emails.send({

@@ -6,6 +6,7 @@ import SolutionSection from '../components/SolutionSection'
 import HybridBridgeSection from '../components/HybridBridgeSection'
 import SocialProofSection from '../components/SocialProofSection'
 import PricingSection from '../components/PricingSection'
+import RevenueAuditCtaSection from '../components/RevenueAuditCtaSection'
 import ContactSection from '../components/ContactSection'
 import GlobalMotionBackground from '../components/GlobalMotionBackground'
 import enDictionary from '../i18n/en'
@@ -21,7 +22,7 @@ function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main id="top" className="relative isolate flex-1 overflow-hidden pt-[60px]">
+      <main id="top" className="site-main-offset relative isolate flex-1 overflow-hidden">
         <GlobalMotionBackground />
         <HeroSection />
         <div className="relative">
@@ -30,6 +31,7 @@ function HomePage() {
           <HybridBridgeSection />
           <SocialProofSection />
           <PricingSection />
+          <RevenueAuditCtaSection />
           <ContactSection />
         </div>
       </main>

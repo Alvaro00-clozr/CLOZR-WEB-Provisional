@@ -224,7 +224,7 @@ function HeroSection() {
 
             <p
               data-reveal-text
-              className="mx-auto mt-10 max-w-[34ch] px-2 text-[clamp(0.88rem,3.2vw,1.1rem)] leading-[1.42] text-[var(--text-primary)] sm:max-w-[860px] sm:px-0 md:body-lg"
+              className="section-copy mx-auto max-w-[34ch] px-2 text-[clamp(0.88rem,3.2vw,1.1rem)] leading-[1.42] text-[var(--text-primary)] sm:max-w-[860px] sm:px-0 md:body-lg"
             >
               {copy.descriptionLine1}
               <br />
@@ -233,7 +233,7 @@ function HeroSection() {
 
             <div
               data-reveal-visual
-              className="mx-auto mt-8 flex w-full max-w-[860px] flex-col items-center justify-center gap-4 sm:mt-10 sm:max-w-none sm:flex-row sm:gap-4"
+              className="section-content mx-auto flex w-full max-w-[860px] flex-col items-center justify-center gap-4 sm:max-w-none sm:flex-row sm:gap-4"
             >
               <a
                 href="/#contact"
