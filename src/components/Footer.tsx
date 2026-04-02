@@ -66,7 +66,7 @@ function Footer() {
     <footer className="relative z-10">
       <div className="widget-premium-border mx-auto w-full rounded-[var(--radius-lg)] border-x-0 border-b-0 bg-secondary ![background:var(--bg-secondary)] px-6 py-7 sm:px-9 sm:py-8">
         <div className="flex flex-col gap-8">
-          <div className="flex flex-col items-center justify-between gap-6 sm:flex-row sm:items-start">
+          <div className="flex flex-col items-center justify-between gap-6 sm:flex-row sm:items-center">
             <div className="flex justify-center sm:justify-start">
               <img
                 src="/brand/logo_white.png"
