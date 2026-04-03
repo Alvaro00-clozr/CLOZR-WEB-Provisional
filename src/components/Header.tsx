@@ -83,7 +83,7 @@ function Header() {
           href="https://clozr.vercel.app/en/login"
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden h-12 w-36 body-sm cursor-pointer items-center justify-center tracking-wide btn-gradient md:flex"
+          className="hidden h-12 w-36 body cursor-pointer items-center justify-center tracking-wide btn-gradient md:flex"
         >
           {copy.cta.getStarted}
         </a>

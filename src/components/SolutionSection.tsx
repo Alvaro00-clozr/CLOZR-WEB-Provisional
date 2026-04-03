@@ -66,7 +66,6 @@ function SolutionSection() {
     yItems: 112,
     durationItems: 0.66,
     stagger: 0.16,
-    gridColumns: 2,
   })
 
   const sectionRef = useCallback(

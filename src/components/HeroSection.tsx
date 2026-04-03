@@ -237,7 +237,7 @@ function HeroSection() {
             >
               <a
                 href="/#contact"
-                className="btn-gradient body-lg inline-flex h-14 w-full items-center justify-center gap-2 px-6 sm:w-auto sm:min-w-[250px] sm:px-7"
+                className="btn-gradient body inline-flex h-14 w-full items-center justify-center gap-2 px-6 sm:w-auto sm:min-w-[250px] sm:px-7"
               >
                 <span>{copy.primaryCta}</span>
               </a>
@@ -246,7 +246,7 @@ function HeroSection() {
                 type="button"
                 disabled
                 aria-disabled="true"
-                className="body-lg inline-flex h-14 w-full cursor-not-allowed items-center justify-center gap-3 rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_72%,transparent)] px-6 text-[var(--text-muted)] opacity-85 sm:w-auto sm:min-w-[220px] sm:px-7"
+                className="body inline-flex h-14 w-full cursor-not-allowed items-center justify-center gap-3 rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_72%,transparent)] px-6 text-[var(--text-muted)] opacity-85 sm:w-auto sm:min-w-[220px] sm:px-7"
               >
                 <span
                   aria-hidden="true"

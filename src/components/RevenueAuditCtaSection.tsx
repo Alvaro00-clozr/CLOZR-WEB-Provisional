@@ -88,10 +88,10 @@ function RevenueAuditCtaSection() {
               <a
                 data-reveal-text
                 href="/#contact"
-                className="btn-gradient body-lg mt-7 inline-flex h-12 items-center justify-center gap-2 px-8 text-center"
+                className="btn-gradient body mt-7 inline-flex h-12 items-center justify-center gap-2 px-8 text-center"
               >
                 <span>{copy.ctaLabel}</span>
-                <span aria-hidden="true">-&gt;</span>
+                <span aria-hidden="true"></span>
               </a>
             </div>
           </article>

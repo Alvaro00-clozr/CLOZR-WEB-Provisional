@@ -78,7 +78,7 @@ function HybridBridgeSection() {
               </p>
               <a
                 href="/#contact"
-                className="btn-gradient body-lg mt-6 inline-flex min-h-12 items-center justify-center px-8 text-center"
+                className="btn-gradient body mt-6 inline-flex min-h-12 items-center justify-center px-8 text-center"
               >
                 {hybridBridgeCopy.ctaLabel}
               </a>

@@ -135,9 +135,13 @@ export const enDictionary = {
     eyebrow: 'PRICING',
     support: 'Investment',
     headline: 'Choose the operating layer for your next stage of growth.',
-    popularBadge: 'MOST POPULAR',
+    popularBadge: 'Popular',
+    showMoreFeatures: 'Show more',
+    showLessFeatures: 'Show less',
     comparison: {
       title: 'Feature Comparison',
+      showToggle: 'Show Comparison Table',
+      hideToggle: 'Hide Comparison Table',
       columns: {
         feature: 'Feature',
         starter: 'Starter',
@@ -180,6 +184,12 @@ export const enDictionary = {
           starter: '48h',
           professional: '4h',
           scale: '1h',
+        },
+        {
+          feature: 'Plan Structure',
+          starter: 'SaaS-only plan',
+          professional: 'Includes integrated RevOps consulting',
+          scale: 'Built for brands exceeding EUR 500K/month revenue',
         },
       ],
     },
