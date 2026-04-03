@@ -449,8 +449,8 @@ function AttributionSection() {
       id="product"
       className="site-section site-section-anchor"
     >
-      <div className="relative mx-auto w-full max-w-[1120px] px-6 md:px-8">
-        <div className="mx-auto max-w-[980px]">
+      <div className="site-shell">
+        <div className="site-shell-inner">
           <div data-reveal-text className="flex items-center gap-5">
             <span className="h-px flex-1 bg-[color-mix(in_srgb,var(--text-muted)_32%,transparent)]" />
             <p className="caption tracking-[0.42em] text-[color-mix(in_srgb,var(--text-muted)_88%,var(--text-primary)_12%)]">

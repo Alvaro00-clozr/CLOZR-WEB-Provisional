@@ -64,7 +64,7 @@ const socialLinks: SocialLink[] = [
 function Footer() {
   return (
     <footer className="relative z-10">
-      <div className="widget-premium-border mx-auto w-full rounded-[var(--radius-lg)] border-x-0 border-b-0 bg-secondary ![background:var(--bg-secondary)] px-6 py-7 sm:px-9 sm:py-8">
+      <div className="widget-premium-border mx-auto w-full rounded-none border-x-0 border-b-0 bg-secondary ![background:var(--bg-secondary)] px-6 py-7 sm:px-9 sm:py-8">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col items-center justify-between gap-6 sm:flex-row sm:items-center">
             <div className="flex justify-center sm:justify-start">
@@ -124,8 +124,13 @@ function Footer() {
           </div>
 
           <div className="grid gap-6 border-t border-[color-mix(in_srgb,var(--text-muted)_16%,transparent)] pt-6 sm:grid-cols-2 sm:gap-8">
-            {footerColumns.map((column) => (
-              <div key={column.title} className="flex flex-col items-center gap-2 sm:items-start">
+            {footerColumns.map((column, index) => (
+              <div
+                key={column.title}
+                className={`flex flex-col items-center gap-2 sm:items-start ${
+                  index === 0 ? 'lg:pl-10' : ''
+                }`}
+              >
                 <span className="caption tracking-[0.14em] text-[var(--text-primary)]">
                   {column.title}
                 </span>

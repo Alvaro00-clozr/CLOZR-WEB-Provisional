@@ -196,7 +196,7 @@ export const enDictionary = {
     plans: {
       starter: {
         name: 'Starter',
-        price: 'EUR 297/month',
+        price: '297 €/month',
         subtitle: 'Essential revenue reconciliation for growing brands',
         description: "WHAT'S INCLUDED:",
         features: [
@@ -212,7 +212,7 @@ export const enDictionary = {
       },
       professional: {
         name: 'Professional',
-        price: 'EUR 597/month',
+        price: '597 €/month',
         subtitle: 'Complete revenue intelligence + strategic consulting',
         description: 'EVERYTHING IN STARTER, PLUS:',
         features: [
@@ -232,7 +232,7 @@ export const enDictionary = {
       growthPartner: {
         name: 'Scale',
         price: 'Custom Pricing',
-        previousPrice: 'EUR 1,497/month',
+        previousPrice: '1,497 €/month',
         subtitle: 'Enterprise-grade infrastructure for multi-brand operations',
         description: 'EVERYTHING IN PROFESSIONAL, PLUS:',
         features: [

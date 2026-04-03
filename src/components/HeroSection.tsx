@@ -195,8 +195,8 @@ function HeroSection() {
         }}
       />
       <div className="absolute inset-0 z-10">
-        <div className="mx-auto w-full max-w-[1120px] px-5 pt-12 sm:px-6 sm:pt-14 md:px-8 md:pt-20">
-          <div className="mx-auto max-w-[980px] text-center">
+        <div className="site-shell pt-12 sm:pt-14 md:pt-20">
+          <div className="site-shell-inner text-center">
             <h1
               data-reveal-text
               className="mx-auto max-w-[16ch] px-2 font-[var(--font-heading)] text-[clamp(1.5rem,7vw,3rem)] leading-[1.06] text-[var(--text-primary)] sm:max-w-[19ch] sm:px-0 sm:text-[clamp(1.85rem,7.6vw,4.25rem)] sm:leading-[1.1] lg:max-w-none"

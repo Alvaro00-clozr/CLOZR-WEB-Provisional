@@ -144,8 +144,8 @@ function PricingSection() {
       id="pricing"
       className="site-section site-section-anchor"
     >
-      <div className="relative mx-auto w-full max-w-[1120px] px-6 md:px-8">
-        <div className="mx-auto max-w-[980px] xl:max-w-[1060px]">
+      <div className="site-shell">
+        <div className="site-shell-inner">
           <div data-reveal-text className="flex items-center gap-5">
             <span className="h-px flex-1 bg-[color-mix(in_srgb,var(--text-muted)_32%,transparent)]" />
             <p className="caption tracking-[0.42em] text-[color-mix(in_srgb,var(--text-muted)_88%,var(--text-primary)_12%)]">
@@ -225,7 +225,13 @@ function PricingSection() {
                         {plan.previousPrice}
                       </p>
                     ) : null}
-                    <p className="mt-1 font-[var(--font-heading)] text-[2rem] leading-none text-[var(--text-primary)]">
+                    <p
+                      className={`mt-1 font-[var(--font-heading)] text-[clamp(2.2rem,3vw,2.6rem)] font-semibold leading-none tracking-[-0.02em] ${
+                        plan.isPopular
+                          ? 'text-[color-mix(in_srgb,var(--brand-warning)_88%,var(--text-primary)_12%)]'
+                          : 'text-[var(--text-primary)]'
+                      }`}
+                    >
                       {plan.price}
                     </p>
                   </div>

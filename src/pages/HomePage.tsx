@@ -3,7 +3,6 @@ import Footer from '../components/Footer'
 import HeroSection from '../components/HeroSection'
 import AttributionSection from '../components/AttributionSection'
 import SolutionSection from '../components/SolutionSection'
-import HybridBridgeSection from '../components/HybridBridgeSection'
 import SocialProofSection from '../components/SocialProofSection'
 import PricingSection from '../components/PricingSection'
 import RevenueAuditCtaSection from '../components/RevenueAuditCtaSection'
@@ -28,7 +27,6 @@ function HomePage() {
         <div className="relative">
           <AttributionSection />
           <SolutionSection />
-          <HybridBridgeSection />
           <SocialProofSection />
           <PricingSection />
           <RevenueAuditCtaSection />
