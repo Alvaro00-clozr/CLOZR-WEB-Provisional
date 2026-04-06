@@ -1,4 +1,4 @@
-import { Instagram, type LucideIcon } from 'lucide-react'
+import { type LucideIcon } from 'lucide-react'
 import enDictionary from '../i18n/en'
 
 const copy = enDictionary.footer
@@ -15,7 +15,7 @@ const footerColumns = [
   {
     title: copy.columns.resources.title,
     links: [
-      { label: copy.columns.resources.links.revopsConsulting, href: '/#advisory' },
+      { label: copy.columns.resources.links.revopsConsulting, href: '/#audit' },
       { label: copy.columns.resources.links.contact, href: '/#contact' },
     ],
   },
@@ -50,8 +50,9 @@ const socialLinks: SocialLink[] = [
   },
   {
     label: copy.social.instagram,
-    kind: 'disabled',
-    icon: Instagram,
+    href: 'https://www.instagram.com/clozr.hq/',
+    kind: 'link',
+    iconSrc: '/network/Instagram.svg',
   },
   {
     label: copy.social.email,
