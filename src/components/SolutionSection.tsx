@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
-import { RefreshCcw, Target, Droplets, type LucideIcon } from 'lucide-react'
+import { RefreshCcw, Target, Droplets, Search, type LucideIcon } from 'lucide-react'
 import { useGsapReveal } from '../hooks/useGsapReveal'
 import enDictionary from '../i18n/en'
 
 type SolutionCard = {
   titleLine1: string
   titleLine2: string
-  description: string
+  points: string[]
   accent: string
   Icon: LucideIcon
 }
@@ -17,25 +17,32 @@ const solutionSectionCopy = {
   titleLine2: enDictionary.solution.titleLine2,
   cards: [
     {
-      titleLine1: enDictionary.solution.cards.reconciliation.titleLine1,
-      titleLine2: enDictionary.solution.cards.reconciliation.titleLine2,
-      description: enDictionary.solution.cards.reconciliation.description,
-      accent: 'var(--brand-info)',
+      titleLine1: enDictionary.solution.cards.failedPaymentLeakage.titleLine1,
+      titleLine2: enDictionary.solution.cards.failedPaymentLeakage.titleLine2,
+      points: [...enDictionary.solution.cards.failedPaymentLeakage.points],
+      accent: 'var(--brand-warning)',
       Icon: RefreshCcw,
     },
     {
-      titleLine1: enDictionary.solution.cards.trueCacRoas.titleLine1,
-      titleLine2: enDictionary.solution.cards.trueCacRoas.titleLine2,
-      description: enDictionary.solution.cards.trueCacRoas.description,
+      titleLine1: enDictionary.solution.cards.refundArbitrage.titleLine1,
+      titleLine2: enDictionary.solution.cards.refundArbitrage.titleLine2,
+      points: [...enDictionary.solution.cards.refundArbitrage.points],
       accent: 'var(--brand-info)',
       Icon: Target,
     },
     {
-      titleLine1: enDictionary.solution.cards.hiddenLeak.titleLine1,
-      titleLine2: enDictionary.solution.cards.hiddenLeak.titleLine2,
-      description: enDictionary.solution.cards.hiddenLeak.description,
-      accent: 'var(--brand-warning)',
+      titleLine1: enDictionary.solution.cards.chargebackBleeding.titleLine1,
+      titleLine2: enDictionary.solution.cards.chargebackBleeding.titleLine2,
+      points: [...enDictionary.solution.cards.chargebackBleeding.points],
+      accent: 'var(--brand-loss)',
       Icon: Droplets,
+    },
+    {
+      titleLine1: enDictionary.solution.cards.attributionLies.titleLine1,
+      titleLine2: enDictionary.solution.cards.attributionLies.titleLine2,
+      points: [...enDictionary.solution.cards.attributionLies.points],
+      accent: 'var(--brand-warning)',
+      Icon: Search,
     },
   ] satisfies SolutionCard[],
 }
@@ -58,8 +65,7 @@ function SolutionSection() {
     xItems: 0,
     yItems: 112,
     durationItems: 0.66,
-    stagger: 0.2,
-    gridColumns: 3,
+    stagger: 0.16,
   })
 
   const sectionRef = useCallback(
@@ -73,10 +79,10 @@ function SolutionSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden py-20 md:py-28"
+      className="site-section"
     >
-      <div className="relative mx-auto w-full max-w-[1120px] px-6 md:px-8">
-        <div className="mx-auto max-w-[980px]">
+      <div className="site-shell">
+        <div className="site-shell-inner">
           <div data-reveal-text className="flex items-center gap-5">
             <span className="h-px flex-1 bg-[color-mix(in_srgb,var(--text-muted)_32%,transparent)]" />
             <p className="caption tracking-[0.42em] text-[color-mix(in_srgb,var(--text-muted)_88%,var(--text-primary)_12%)]">
@@ -87,14 +93,14 @@ function SolutionSection() {
 
           <h2
             data-reveal-text
-            className="mt-8 text-center font-[var(--font-heading)] text-[clamp(2rem,4vw,3.25rem)] leading-[1.2] text-[var(--text-primary)]"
+            className="section-title text-center font-[var(--font-heading)] text-[clamp(2rem,4vw,3.25rem)] leading-[1.2] text-[var(--text-primary)]"
           >
             {solutionSectionCopy.titleLine1}
             <br />
             {solutionSectionCopy.titleLine2}
           </h2>
 
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
+          <div className="section-content grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {solutionSectionCopy.cards.map((card) => (
               <article
                 key={`${card.titleLine1}-${card.titleLine2}`}
@@ -127,10 +133,10 @@ function SolutionSection() {
                       />
                     </div>
 
-                    <h3 className="font-[var(--font-heading)] text-[clamp(1.5rem,2.1vw,2rem)] leading-[1.15] text-[var(--text-primary)]">
+                    <h3 className="font-[var(--font-heading)] text-[clamp(1.2rem,1.6vw,1.5rem)] leading-[1.2] text-[var(--text-primary)]">
                       {card.titleLine1}
-                      <br />
                       <span
+                        className="mt-1 block text-[clamp(0.92rem,1.2vw,1.08rem)] leading-[1.32]"
                         style={{
                           color: `color-mix(in srgb, ${card.accent} 78%, var(--text-primary) 22%)`,
                         }}
@@ -140,9 +146,16 @@ function SolutionSection() {
                     </h3>
                   </div>
 
-                  <p className="body mt-5 max-w-[320px] text-[var(--text-secondary)]">
-                    {card.description}
-                  </p>
+                  <ul className="mt-5 space-y-2.5">
+                    {card.points.map((point, index) => (
+                      <li key={point} className="flex items-start gap-2.5">
+                        <span className="body-sm mt-[1px] text-[var(--text-muted)]">
+                          {index === 0 ? '|-' : '\\-'}
+                        </span>
+                        <span className="body text-[var(--text-secondary)]">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </article>
             ))}

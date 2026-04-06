@@ -64,23 +64,76 @@ const socialLinks: SocialLink[] = [
 function Footer() {
   return (
     <footer className="relative z-10">
-      <div className="widget-premium-border mx-auto w-full rounded-[var(--radius-lg)] border-x-0 border-b-0 bg-secondary ![background:var(--bg-secondary)] px-6 py-7 sm:px-9 sm:py-8">
-        <div className="grid gap-8 md:grid-cols-[1.1fr_1fr] md:gap-10">
-          <div className="flex justify-center md:justify-start">
-            <img
-              src="/brand/logo_white.png"
-              alt={copy.logoAlt}
-              width={352}
-              height={235}
-              decoding="async"
-              className="h-auto w-[168px] max-w-full shrink-0"
-            />
+      <div className="widget-premium-border mx-auto w-full rounded-none border-x-0 border-b-0 bg-secondary ![background:var(--bg-secondary)] px-6 py-7 sm:px-9 sm:py-8">
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col items-center justify-between gap-6 sm:flex-row sm:items-center">
+            <div className="flex justify-center sm:justify-start">
+              <img
+                src="/brand/logo_white.png"
+                alt={copy.logoAlt}
+                width={352}
+                height={235}
+                decoding="async"
+                className="site-header-logo w-auto max-w-full shrink-0 object-contain"
+              />
+            </div>
+
+            <div className="flex items-center justify-center gap-[var(--footer-social-gap)] sm:justify-end">
+              {socialLinks.map((item) => {
+                const Icon = item.icon
+                const content = item.iconSrc ? (
+                  <img
+                    src={item.iconSrc}
+                    alt={item.label}
+                    width={22}
+                    height={22}
+                    decoding="async"
+                    className="h-[var(--footer-social-icon-size)] w-[var(--footer-social-icon-size)]"
+                  />
+                ) : Icon ? (
+                  <Icon size={22} />
+                ) : null
+
+                if (item.kind === 'disabled') {
+                  return (
+                    <button
+                      key={item.label}
+                      type="button"
+                      aria-label={item.label}
+                      aria-disabled="true"
+                      disabled
+                      className="inline-flex h-[var(--footer-social-button-size)] w-[var(--footer-social-button-size)] cursor-not-allowed items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_20%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_68%,transparent)] text-[var(--text-muted)] opacity-65"
+                    >
+                      {content}
+                    </button>
+                  )
+                }
+
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    aria-label={item.label}
+                    className="inline-flex h-[var(--footer-social-button-size)] w-[var(--footer-social-button-size)] items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_20%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_68%,transparent)] text-[var(--text-muted)] transition-[filter,color,border-color] duration-200 hover:brightness-110 hover:text-[var(--text-primary)]"
+                  >
+                    {content}
+                  </a>
+                )
+              })}
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 text-center sm:gap-x-9">
-            {footerColumns.map((column) => (
-              <div key={column.title} className="flex flex-col items-center gap-1.5 sm:items-start">
-                <span className="body text-[var(--text-primary)]">{column.title}</span>
+          <div className="grid gap-6 border-t border-[color-mix(in_srgb,var(--text-muted)_16%,transparent)] pt-6 sm:grid-cols-2 sm:gap-8">
+            {footerColumns.map((column, index) => (
+              <div
+                key={column.title}
+                className={`flex flex-col items-center gap-2 sm:items-start ${
+                  index === 0 ? 'lg:pl-10' : ''
+                }`}
+              >
+                <span className="caption tracking-[0.14em] text-[var(--text-primary)]">
+                  {column.title}
+                </span>
                 {column.links.map((link) => (
                   <a
                     key={`${column.title}-${link.label}`}
@@ -93,11 +146,9 @@ function Footer() {
               </div>
             ))}
           </div>
-        </div>
 
-        <div className="mt-7 flex flex-col gap-4 pt-5 md:flex-row md:items-end md:justify-between">
-          <div className="flex flex-col items-center gap-2 md:items-start">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-3 border-t border-[color-mix(in_srgb,var(--text-muted)_16%,transparent)] pt-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center justify-center gap-3 sm:justify-start">
               <a
                 href="/privacy"
                 className="body-sm inline-flex w-fit rounded-[var(--radius-lg)] px-3 py-1.5 text-[var(--text-muted)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] hover:text-[var(--text-primary)]"
@@ -111,53 +162,10 @@ function Footer() {
                 {copy.legal.terms}
               </a>
             </div>
-            <p className="body text-center text-[var(--text-secondary)] md:text-left">
+
+            <p className="body text-center text-[var(--text-secondary)] sm:text-right">
               {copy.location}
             </p>
-          </div>
-
-          <div className="flex items-center justify-center gap-4 md:justify-end">
-            {socialLinks.map((item) => {
-              const Icon = item.icon
-              const content = item.iconSrc ? (
-                <img
-                  src={item.iconSrc}
-                  alt={item.label}
-                  width={24}
-                  height={24}
-                  decoding="async"
-                  className="h-6 w-6"
-                />
-              ) : Icon ? (
-                <Icon size={22} />
-              ) : null
-
-              if (item.kind === 'disabled') {
-                return (
-                  <button
-                    key={item.label}
-                    type="button"
-                    aria-label={item.label}
-                    aria-disabled="true"
-                    disabled
-                    className="inline-flex h-14 w-14 cursor-not-allowed items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_20%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_68%,transparent)] text-[var(--text-muted)] opacity-65"
-                  >
-                    {content}
-                  </button>
-                )
-              }
-
-              return (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  aria-label={item.label}
-                  className="inline-flex h-14 w-14 items-center justify-center widget-premium-border transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)]"
-                >
-                  {content}
-                </a>
-              )
-            })}
           </div>
         </div>
       </div>

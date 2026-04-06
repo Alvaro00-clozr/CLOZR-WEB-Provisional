@@ -13,6 +13,7 @@ const navItems = [
 
 function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
     if (!isMobileMenuOpen) {
@@ -32,12 +33,33 @@ function Header() {
     }
   }, [isMobileMenuOpen])
 
+  useEffect(() => {
+    const onScroll = () => {
+      setIsScrolled(window.scrollY > 12)
+    }
+
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 h-[60px] backdrop-blur-[4px] backdrop-saturate-[130%]">
-      <div className="mx-auto h-full flex w-full justify-between items-center px-6 md:px-8">
-        <a className="h-full inline-flex shrink-0 items-center" href="/#top" aria-label={copy.logoAriaLabel}>
+    <header
+      className={`site-header fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'site-header--scrolled' : ''
+      }`}
+    >
+      <div className="mx-auto flex h-full w-full items-center justify-between px-6 md:px-8">
+        <a
+          className="site-header-logo inline-flex shrink-0 items-center"
+          href="/#top"
+          aria-label={copy.logoAriaLabel}
+        >
           <img
-            className="h-full max-h-[60px] w-auto object-contain"
+            className="h-full w-auto object-contain"
             src="/brand/logo_white.png"
             alt={copy.logoAlt}
             width={352}
@@ -61,7 +83,7 @@ function Header() {
           href="https://clozr.vercel.app/en/login"
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden h-12 w-36 body-sm cursor-pointer items-center justify-center tracking-wide btn-gradient md:flex"
+          className="hidden h-12 w-36 body cursor-pointer items-center justify-center tracking-wide btn-gradient md:flex"
         >
           {copy.cta.getStarted}
         </a>
@@ -82,7 +104,7 @@ function Header() {
           <button
             type="button"
             aria-label={copy.closeOverlayAriaLabel}
-            className="fixed inset-0 top-[60px] z-40 bg-black/30 backdrop-blur-[1px]"
+            className="fixed inset-0 top-[var(--header-height-mobile)] z-40 bg-black/30 backdrop-blur-[1px] md:top-[var(--header-height-desktop)]"
             onClick={() => setIsMobileMenuOpen(false)}
           />
           <div className="absolute inset-x-4 top-[calc(100%+0.5rem)] z-50">

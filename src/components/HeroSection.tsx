@@ -195,8 +195,8 @@ function HeroSection() {
         }}
       />
       <div className="absolute inset-0 z-10">
-        <div className="mx-auto w-full max-w-[1120px] px-5 pt-12 sm:px-6 sm:pt-14 md:px-8 md:pt-20">
-          <div className="mx-auto max-w-[980px] text-center">
+        <div className="site-shell pt-12 sm:pt-14 md:pt-20">
+          <div className="site-shell-inner text-center">
             <h1
               data-reveal-text
               className="mx-auto max-w-[16ch] px-2 font-[var(--font-heading)] text-[clamp(1.5rem,7vw,3rem)] leading-[1.06] text-[var(--text-primary)] sm:max-w-[19ch] sm:px-0 sm:text-[clamp(1.85rem,7.6vw,4.25rem)] sm:leading-[1.1] lg:max-w-none"
@@ -224,7 +224,7 @@ function HeroSection() {
 
             <p
               data-reveal-text
-              className="mx-auto mt-10 max-w-[34ch] px-2 text-[clamp(0.88rem,3.2vw,1.1rem)] leading-[1.42] text-[var(--text-primary)] sm:max-w-[860px] sm:px-0 md:body-lg"
+              className="section-copy mx-auto max-w-[34ch] px-2 text-[clamp(0.88rem,3.2vw,1.1rem)] leading-[1.42] text-[var(--text-primary)] sm:max-w-[860px] sm:px-0 md:body-lg"
             >
               {copy.descriptionLine1}
               <br />
@@ -233,11 +233,11 @@ function HeroSection() {
 
             <div
               data-reveal-visual
-              className="mx-auto mt-8 flex w-full max-w-[860px] flex-col items-center justify-center gap-4 sm:mt-10 sm:max-w-none sm:flex-row sm:gap-4"
+              className="section-content mx-auto flex w-full max-w-[860px] flex-col items-center justify-center gap-4 sm:max-w-none sm:flex-row sm:gap-4"
             >
               <a
                 href="/#contact"
-                className="btn-gradient body-lg inline-flex h-14 w-full items-center justify-center gap-2 px-6 sm:w-auto sm:min-w-[250px] sm:px-7"
+                className="btn-gradient body inline-flex h-14 w-full items-center justify-center gap-2 px-6 sm:w-auto sm:min-w-[250px] sm:px-7"
               >
                 <span>{copy.primaryCta}</span>
               </a>
@@ -246,7 +246,7 @@ function HeroSection() {
                 type="button"
                 disabled
                 aria-disabled="true"
-                className="body-lg inline-flex h-14 w-full cursor-not-allowed items-center justify-center gap-3 rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_72%,transparent)] px-6 text-[var(--text-muted)] opacity-85 sm:w-auto sm:min-w-[220px] sm:px-7"
+                className="body inline-flex h-14 w-full cursor-not-allowed items-center justify-center gap-3 rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_72%,transparent)] px-6 text-[var(--text-muted)] opacity-85 sm:w-auto sm:min-w-[220px] sm:px-7"
               >
                 <span
                   aria-hidden="true"

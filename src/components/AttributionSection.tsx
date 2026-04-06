@@ -37,8 +37,9 @@ function AttributionComparisonChart({
 }: AttributionComparisonChartProps) {
   const chartRef = useRef<HTMLDivElement | null>(null)
   const [isChartActive, setIsChartActive] = useState(false)
-  const claimedValue = 100
-  const bankValue = 70
+  const claimedValue = 4
+  const bankValue = 2.8
+  const formatRoas = (value: number) => `${value.toFixed(1)}x`
 
   useEffect(() => {
     const chartNode = chartRef.current
@@ -196,14 +197,15 @@ function AttributionComparisonChart({
         yAxis: {
           type: 'value',
           min: 0,
-          max: 100,
-          interval: 25,
+          max: 4.5,
+          interval: 0.5,
           axisLine: { show: false },
           axisTick: { show: false },
           axisLabel: {
             color: textMuted,
             fontFamily: numbersFont,
             fontSize: 11,
+            formatter: (value) => formatRoas(Number(value)),
           },
           splitLine: {
             lineStyle: {
@@ -224,7 +226,10 @@ function AttributionComparisonChart({
               fontFamily: numbersFont,
               fontSize: 16,
               fontWeight: 700,
-              formatter: '{c}',
+              formatter: (params) => {
+                const rawValue = Array.isArray(params.value) ? params.value[1] : params.value
+                return formatRoas(Number(rawValue))
+              },
             },
             data: [
               {
@@ -442,10 +447,10 @@ function AttributionSection() {
     <section
       ref={sectionRef}
       id="product"
-      className="relative overflow-hidden scroll-mt-24 py-20 md:scroll-mt-28 md:py-28"
+      className="site-section site-section-anchor"
     >
-      <div className="relative mx-auto w-full max-w-[1120px] px-6 md:px-8">
-        <div className="mx-auto max-w-[980px]">
+      <div className="site-shell">
+        <div className="site-shell-inner">
           <div data-reveal-text className="flex items-center gap-5">
             <span className="h-px flex-1 bg-[color-mix(in_srgb,var(--text-muted)_32%,transparent)]" />
             <p className="caption tracking-[0.42em] text-[color-mix(in_srgb,var(--text-muted)_88%,var(--text-primary)_12%)]">
@@ -456,7 +461,7 @@ function AttributionSection() {
 
           <h2
             data-reveal-text
-            className="mt-8 text-center font-[var(--font-heading)] text-[clamp(2rem,4.2vw,3.25rem)] leading-[1.2] text-[var(--text-primary)]"
+            className="section-title text-center font-[var(--font-heading)] text-[clamp(2rem,4.2vw,3.25rem)] leading-[1.2] text-[var(--text-primary)]"
           >
             {attributionSectionCopy.titleLine}
             <br />
@@ -467,8 +472,8 @@ function AttributionSection() {
             {attributionSectionCopy.titleSuffix}
           </h2>
 
-          <div className="mt-14 grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(340px,410px)] lg:gap-14">
-            <div data-reveal-text className="space-y-6 text-[var(--text-secondary)]">
+          <div className="section-content grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(340px,410px)] lg:gap-14">
+            <div data-reveal-text className="space-y-5 text-[var(--text-secondary)]">
               {attributionSectionCopy.paragraphs.map((paragraph) => (
                 <p key={paragraph} className="body-lg max-w-[620px]">
                   {paragraph}

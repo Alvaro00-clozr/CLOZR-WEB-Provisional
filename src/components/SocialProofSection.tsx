@@ -68,10 +68,10 @@ function SocialProofSection() {
     <section
       ref={sectionRef}
       id="proof"
-      className="relative overflow-hidden scroll-mt-24 py-20 md:scroll-mt-28 md:py-28"
+      className="site-section site-section-anchor"
     >
-      <div className="relative mx-auto w-full max-w-[1120px] px-6 md:px-8">
-        <div className="mx-auto max-w-[980px]">
+      <div className="site-shell">
+        <div className="site-shell-inner">
           <div data-reveal-text className="flex items-center gap-5">
             <span className="h-px flex-1 bg-[color-mix(in_srgb,var(--text-muted)_32%,transparent)]" />
             <p className="caption tracking-[0.42em] text-[color-mix(in_srgb,var(--text-muted)_88%,var(--text-primary)_12%)]">
@@ -82,18 +82,18 @@ function SocialProofSection() {
 
           <h2
             data-reveal-text
-            className="mt-8 text-center font-[var(--font-heading)] text-[clamp(2rem,4vw,3.2rem)] leading-[1.18] text-[var(--text-primary)]"
+            className="section-title text-center font-[var(--font-heading)] text-[clamp(2rem,4vw,3.2rem)] leading-[1.18] text-[var(--text-primary)]"
           >
             {socialProofCopy.headline}
           </h2>
           <p
             data-reveal-text
-            className="body-lg mx-auto mt-6 max-w-[760px] text-center text-[var(--text-secondary)]"
+            className="body-lg section-copy mx-auto max-w-[760px] text-center text-[var(--text-secondary)]"
           >
             {socialProofCopy.subcopy}
           </p>
 
-          <div className="mt-12 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="section-content grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
             <article
               data-reveal-visual
               className="widget-premium-border relative isolate overflow-hidden rounded-[var(--radius-lg)] bg-[color-mix(in_srgb,var(--bg-card)_92%,transparent)] p-5 transition-transform duration-300 ease-out hover:-translate-y-1 sm:p-6"
@@ -114,7 +114,7 @@ function SocialProofSection() {
                   {socialProofCopy.integrations.map((integration) => (
                     <div
                       key={integration.name}
-                      className="group flex h-14 items-center justify-center rounded-[12px] border border-[color-mix(in_srgb,var(--text-muted)_20%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_76%,transparent)] opacity-55 saturate-0 transition-all duration-300 hover:opacity-75 hover:saturate-100"
+                      className="integration-logo-card flex h-14 items-center justify-center rounded-[12px] border border-[color-mix(in_srgb,var(--text-muted)_20%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_76%,transparent)]"
                     >
                       <img
                         src={integration.src}
@@ -122,7 +122,7 @@ function SocialProofSection() {
                         width={integration.width}
                         height={integration.height}
                         decoding="async"
-                        className="max-h-7 w-auto object-contain grayscale transition-all duration-300 group-hover:grayscale-0"
+                        className="integration-logo-image max-h-7 w-auto object-contain"
                         loading="lazy"
                       />
                     </div>

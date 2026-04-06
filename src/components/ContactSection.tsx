@@ -1,5 +1,4 @@
-import { memo, useCallback, useState, type ChangeEvent, type FormEvent } from 'react'
-import { Mail, MessageSquareText } from 'lucide-react'
+import { memo, useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { useGsapReveal } from '../hooks/useGsapReveal'
 import enDictionary from '../i18n/en'
 import { trackGenerateLead } from '../lib/analytics'
@@ -8,11 +7,30 @@ const FORM_LIMITS = {
   nameMax: 80,
   emailMax: 160,
   companyMax: 120,
-  messageMin: 10,
   messageMax: 1200,
 } as const
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const TURNSTILE_SITE_KEY = (import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined)?.trim() || ''
+
+type TurnstileRenderOptions = {
+  sitekey: string
+  theme?: 'light' | 'dark' | 'auto'
+  callback?: (token: string) => void
+  'expired-callback'?: () => void
+  'error-callback'?: () => void
+}
+
+type TurnstileApi = {
+  render: (container: HTMLElement, options: TurnstileRenderOptions) => string
+  remove: (widgetId: string) => void
+}
+
+declare global {
+  interface Window {
+    turnstile?: TurnstileApi
+  }
+}
 
 const contactCopy = {
   eyebrow: enDictionary.contact.eyebrow,
@@ -20,12 +38,13 @@ const contactCopy = {
   headline: enDictionary.contact.headline,
   description: enDictionary.contact.description,
   ctaLabel: enDictionary.contact.ctaLabel,
-  sideTitle: enDictionary.contact.sideTitle,
-  sidePoints: [...enDictionary.contact.sidePoints],
-  replyTime: enDictionary.contact.replyTime,
   sendingLabel: enDictionary.contact.sendingLabel,
   successMessage: enDictionary.contact.successMessage,
   errorMessage: enDictionary.contact.errorMessage,
+  legalPrefix: enDictionary.contact.legalPrefix,
+  legalTermsLabel: enDictionary.contact.legalTermsLabel,
+  legalAnd: enDictionary.contact.legalAnd,
+  legalPrivacyLabel: enDictionary.contact.legalPrivacyLabel,
   form: {
     fullName: enDictionary.contact.form.fullName,
     workEmail: enDictionary.contact.form.workEmail,
@@ -34,7 +53,7 @@ const contactCopy = {
     monthlyRevenuePlaceholder: enDictionary.contact.form.monthlyRevenuePlaceholder,
     monthlyRevenueOptions: [...enDictionary.contact.form.monthlyRevenueOptions],
     message: enDictionary.contact.form.message,
-    hints: enDictionary.contact.form.hints,
+    messageOptional: enDictionary.contact.form.messageOptional,
     validation: enDictionary.contact.form.validation,
   },
 }
@@ -43,6 +62,7 @@ const validatePayload = (payload: {
   name: string
   email: string
   company: string
+  revenue: string
   message: string
 }) => {
   if (!payload.name) return contactCopy.form.validation.nameRequired
@@ -59,9 +79,8 @@ const validatePayload = (payload: {
   if (payload.company.length > FORM_LIMITS.companyMax) {
     return contactCopy.form.validation.companyTooLong
   }
-  if (!payload.message) return contactCopy.form.validation.messageRequired
-  if (payload.message.length < FORM_LIMITS.messageMin) {
-    return contactCopy.form.validation.messageTooShort
+  if (!payload.revenue) {
+    return contactCopy.form.validation.revenueRequired
   }
   if (payload.message.length > FORM_LIMITS.messageMax) {
     return contactCopy.form.validation.messageTooLong
@@ -70,51 +89,31 @@ const validatePayload = (payload: {
   return ''
 }
 
-type HintProps = {
-  visible: boolean
-  text: string
-}
-
-const FieldHint = memo(function FieldHint({ visible, text }: HintProps) {
-  if (!visible) return null
-
-  return <span className="body-sm text-[var(--text-muted)]">{text}</span>
-})
-
-type ValidatedInputFieldProps = {
-  label: string
+type FloatingInputFieldProps = {
   name: 'name' | 'email' | 'company'
-  hint: string
-  required?: boolean
+  label: string
   type?: 'text' | 'email'
+  required?: boolean
   maxLength: number
   inputMode?: 'text' | 'email'
   pattern?: string
-  validator: (value: string) => boolean
 }
 
-const ValidatedInputField = memo(function ValidatedInputField({
-  label,
+const FloatingInputField = memo(function FloatingInputField({
   name,
-  hint,
-  required = false,
+  label,
   type = 'text',
+  required = false,
   maxLength,
   inputMode,
   pattern,
-  validator,
-}: ValidatedInputFieldProps) {
+}: FloatingInputFieldProps) {
   const [value, setValue] = useState('')
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value)
-  }
-
-  const showHint = !validator(value)
+  const [isFocused, setIsFocused] = useState(false)
+  const showFloatingLabel = isFocused || value.length > 0
 
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="body-sm text-[var(--text-secondary)]">{label}</span>
+    <label className="relative block">
       <input
         name={name}
         type={type}
@@ -123,63 +122,140 @@ const ValidatedInputField = memo(function ValidatedInputField({
         inputMode={inputMode}
         pattern={pattern}
         value={value}
-        onChange={handleChange}
-        className="h-11 rounded-[10px] border border-[color-mix(in_srgb,var(--text-muted)_24%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_78%,transparent)] px-3 text-[var(--text-primary)] outline-none transition-all focus:border-[color-mix(in_srgb,var(--brand-info)_58%,transparent)] focus:shadow-[0_0_0_1px_color-mix(in_srgb,var(--brand-info)_42%,transparent)]"
+        onChange={(event) => setValue(event.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        className="w-full rounded-[12px] border border-[var(--contact-field-border)] bg-[var(--contact-field-bg)] px-4 pb-3 pt-7 text-[16px] text-[var(--text-primary)] outline-none transition-all focus:border-[var(--contact-field-focus)] focus:shadow-[0_0_0_3px_var(--contact-field-focus-glow)]"
       />
-      <FieldHint visible={showHint} text={hint} />
+      <span
+        className={`pointer-events-none absolute left-4 transition-all duration-200 ${
+          showFloatingLabel
+            ? 'top-2 text-[0.72rem] tracking-[0.06em] text-[var(--text-muted)]'
+            : 'top-1/2 -translate-y-1/2 text-[1rem] text-[var(--text-secondary)]'
+        }`}
+      >
+        {label}
+      </span>
     </label>
   )
 })
 
-type ValidatedTextareaFieldProps = {
+type FloatingSelectFieldProps = {
+  name: 'revenue'
   label: string
-  name: 'message'
-  hint: string
-  minLength: number
-  maxLength: number
-  validator: (value: string) => boolean
+  required?: boolean
+  options: string[]
 }
 
-const ValidatedTextareaField = memo(function ValidatedTextareaField({
-  label,
+const FloatingSelectField = memo(function FloatingSelectField({
   name,
-  hint,
-  minLength,
-  maxLength,
-  validator,
-}: ValidatedTextareaFieldProps) {
+  label,
+  required = false,
+  options,
+}: FloatingSelectFieldProps) {
   const [value, setValue] = useState('')
-
-  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setValue(event.target.value)
-  }
-
-  const showHint = !validator(value)
+  const [isFocused, setIsFocused] = useState(false)
+  const showFloatingLabel = isFocused || value.length > 0
 
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="body-sm text-[var(--text-secondary)]">{label}</span>
+    <label className="relative block">
+      <select
+        name={name}
+        required={required}
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        className={`w-full appearance-none rounded-[12px] border border-[var(--contact-field-border)] bg-[var(--contact-field-bg)] px-4 pb-3 pt-7 pr-11 text-[16px] outline-none transition-all focus:border-[var(--contact-field-focus)] focus:shadow-[0_0_0_3px_var(--contact-field-focus-glow)] ${
+          value ? 'text-[var(--text-primary)]' : 'text-transparent'
+        }`}
+      >
+        <option
+          value=""
+          disabled
+          style={{ color: 'var(--text-muted)', background: 'var(--contact-field-bg)' }}
+        >
+          {contactCopy.form.monthlyRevenuePlaceholder}
+        </option>
+        {options.map((optionValue) => (
+          <option
+            key={optionValue}
+            value={optionValue}
+            style={{ color: 'var(--text-primary)', background: 'var(--contact-field-bg)' }}
+          >
+            {optionValue}
+          </option>
+        ))}
+      </select>
+      <span
+        className={`pointer-events-none absolute left-4 transition-all duration-200 ${
+          showFloatingLabel
+            ? 'top-2 text-[0.72rem] tracking-[0.06em] text-[var(--text-muted)]'
+            : 'top-1/2 -translate-y-1/2 text-[1rem] text-[var(--text-secondary)]'
+        }`}
+      >
+        {label}
+      </span>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[0.9rem] text-[var(--text-muted)]"
+      >
+        v
+      </span>
+    </label>
+  )
+})
+
+type FloatingTextareaFieldProps = {
+  name: 'message'
+  label: string
+  maxLength: number
+}
+
+const FloatingTextareaField = memo(function FloatingTextareaField({
+  name,
+  label,
+  maxLength,
+}: FloatingTextareaFieldProps) {
+  const [value, setValue] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
+  const showFloatingLabel = isFocused || value.length > 0
+
+  return (
+    <label className="relative block">
       <textarea
         name={name}
-        rows={5}
-        required
-        minLength={minLength}
+        rows={4}
         maxLength={maxLength}
         value={value}
-        onChange={handleChange}
-        className="min-h-[132px] rounded-[10px] border border-[color-mix(in_srgb,var(--text-muted)_24%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_78%,transparent)] px-3 py-2.5 text-[var(--text-primary)] outline-none transition-all focus:border-[color-mix(in_srgb,var(--brand-info)_58%,transparent)] focus:shadow-[0_0_0_1px_color-mix(in_srgb,var(--brand-info)_42%,transparent)]"
+        onChange={(event) => setValue(event.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        className="min-h-[142px] w-full resize-y rounded-[12px] border border-[var(--contact-field-border)] bg-[var(--contact-field-bg)] px-4 pb-3 pt-8 text-[16px] text-[var(--text-primary)] outline-none transition-all focus:border-[var(--contact-field-focus)] focus:shadow-[0_0_0_3px_var(--contact-field-focus-glow)]"
       />
-      <FieldHint visible={showHint} text={hint} />
+      <span
+        className={`pointer-events-none absolute left-4 transition-all duration-200 ${
+          showFloatingLabel
+            ? 'top-2 text-[0.72rem] tracking-[0.06em] text-[var(--text-muted)]'
+            : 'top-5 text-[1rem] text-[var(--text-secondary)]'
+        }`}
+      >
+        {label}
+      </span>
     </label>
   )
 })
 
 function ContactSection() {
+  const isCaptchaEnabled = TURNSTILE_SITE_KEY.length > 0
   const [formResetKey, setFormResetKey] = useState(0)
   const [formStartedAt, setFormStartedAt] = useState(() => Date.now().toString())
+  const [captchaToken, setCaptchaToken] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [formErrorMessage, setFormErrorMessage] = useState('')
+  const captchaContainerRef = useRef<HTMLDivElement | null>(null)
+  const captchaWidgetIdRef = useRef<string | null>(null)
 
   const { rootRef: textRevealRef } = useGsapReveal<HTMLElement>({
     itemsSelector: '[data-reveal-text]',
@@ -199,7 +275,6 @@ function ContactSection() {
     yItems: 112,
     durationItems: 0.66,
     stagger: 0.14,
-    gridColumns: 2,
   })
 
   const sectionRef = useCallback(
@@ -209,6 +284,61 @@ function ContactSection() {
     },
     [textRevealRef, visualRevealRef],
   )
+
+  useEffect(() => {
+    if (!isCaptchaEnabled) return
+
+    let isCancelled = false
+    const scriptId = 'cf-turnstile-script'
+
+    const renderCaptcha = () => {
+      if (isCancelled || !window.turnstile || !captchaContainerRef.current) return
+
+      if (captchaWidgetIdRef.current) {
+        window.turnstile.remove(captchaWidgetIdRef.current)
+        captchaWidgetIdRef.current = null
+      }
+
+      const widgetId = window.turnstile.render(captchaContainerRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: 'dark',
+        callback: (token) => setCaptchaToken(token),
+        'expired-callback': () => setCaptchaToken(''),
+        'error-callback': () => setCaptchaToken(''),
+      })
+
+      captchaWidgetIdRef.current = widgetId
+    }
+
+    const onScriptLoad = () => {
+      renderCaptcha()
+    }
+
+    const existingScript = document.getElementById(scriptId) as HTMLScriptElement | null
+    if (existingScript) {
+      existingScript.addEventListener('load', onScriptLoad)
+      renderCaptcha()
+    } else {
+      const script = document.createElement('script')
+      script.id = scriptId
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+      script.async = true
+      script.defer = true
+      script.addEventListener('load', onScriptLoad)
+      document.head.appendChild(script)
+    }
+
+    return () => {
+      isCancelled = true
+      const script = document.getElementById(scriptId) as HTMLScriptElement | null
+      script?.removeEventListener('load', onScriptLoad)
+
+      if (window.turnstile && captchaWidgetIdRef.current) {
+        window.turnstile.remove(captchaWidgetIdRef.current)
+        captchaWidgetIdRef.current = null
+      }
+    }
+  }, [formResetKey, isCaptchaEnabled])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -239,13 +369,23 @@ function ContactSection() {
       return
     }
 
+    if (isCaptchaEnabled && !captchaToken) {
+      setFormErrorMessage('Please complete the captcha challenge.')
+      setFormStatus('error')
+      setIsSubmitting(false)
+      return
+    }
+
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          captchaToken,
+        }),
       })
 
       if (!response.ok) {
@@ -267,6 +407,7 @@ function ContactSection() {
       form.reset()
       setFormResetKey((current) => current + 1)
       setFormStartedAt(Date.now().toString())
+      setCaptchaToken('')
       setFormStatus('success')
     } catch (error) {
       console.error('Contact form submission error:', error)
@@ -278,13 +419,9 @@ function ContactSection() {
   }
 
   return (
-    <section
-      ref={sectionRef}
-      id="contact"
-      className="relative overflow-hidden scroll-mt-24 py-20 md:scroll-mt-28 md:py-28"
-    >
-      <div className="relative mx-auto w-full max-w-[1120px] px-6 md:px-8">
-        <div className="mx-auto max-w-[980px]">
+    <section ref={sectionRef} id="contact" className="site-section site-section-anchor">
+      <div className="site-shell">
+        <div className="site-shell-inner">
           <div data-reveal-text className="flex items-center gap-5">
             <span className="h-px flex-1 bg-[color-mix(in_srgb,var(--text-muted)_32%,transparent)]" />
             <p className="caption tracking-[0.42em] text-[color-mix(in_srgb,var(--text-muted)_88%,var(--text-primary)_12%)]">
@@ -293,190 +430,115 @@ function ContactSection() {
             <span className="h-px flex-1 bg-[color-mix(in_srgb,var(--text-muted)_32%,transparent)]" />
           </div>
 
-          <p
-            data-reveal-text
-            className="caption mt-5 text-center tracking-[0.2em] text-[color-mix(in_srgb,var(--brand-warning)_76%,var(--text-primary)_24%)]"
-          >
-            {contactCopy.support}
-          </p>
-
           <h2
             data-reveal-text
-            className="mt-6 text-center font-[var(--font-heading)] text-[clamp(2rem,4vw,3.2rem)] leading-[1.18] text-[var(--text-primary)]"
+            className="section-title text-center font-[var(--font-heading)] text-[clamp(2rem,4vw,3.2rem)] leading-[1.12] text-[var(--text-primary)]"
           >
             {contactCopy.headline}
           </h2>
           <p
             data-reveal-text
-            className="body-lg mx-auto mt-6 max-w-[760px] text-center text-[var(--text-secondary)]"
+            className="body-lg section-copy mx-auto max-w-[680px] text-center text-[var(--text-secondary)]"
           >
             {contactCopy.description}
           </p>
 
-          <div className="mt-12 grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
-            <article
-              data-reveal-visual
-              className="widget-premium-border relative isolate overflow-hidden rounded-[var(--radius-lg)] bg-[color-mix(in_srgb,var(--bg-card)_92%,transparent)] p-5 transition-transform duration-300 ease-out hover:-translate-y-1 sm:p-6"
-            >
-              <div
+          <article
+            data-reveal-visual
+            className="section-content relative mx-auto max-w-[760px] overflow-hidden rounded-[var(--radius-lg)] border border-[var(--contact-form-border)] p-6 shadow-[0_16px_34px_rgba(0,0,0,0.34)] sm:p-10"
+            style={{ background: 'var(--contact-form-bg)' }}
+          >
+            <form key={formResetKey} className="relative grid gap-4" onSubmit={handleSubmit} noValidate>
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0 opacity-55"
-                style={{
-                  background:
-                    'radial-gradient(94% 88% at 10% 8%, color-mix(in srgb, var(--brand-info) 24%, transparent) 0%, transparent 70%), radial-gradient(80% 80% at 88% 14%, color-mix(in srgb, var(--brand-warning) 18%, transparent) 0%, transparent 74%)',
-                }}
+                className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden opacity-0"
               />
-              <form
-                key={formResetKey}
-                className="relative grid gap-3"
-                onSubmit={handleSubmit}
-                noValidate
+              <input type="hidden" name="startedAt" value={formStartedAt} readOnly />
+
+              <FloatingInputField
+                name="name"
+                label={contactCopy.form.fullName}
+                required
+                maxLength={FORM_LIMITS.nameMax}
+              />
+
+              <FloatingInputField
+                name="email"
+                label={contactCopy.form.workEmail}
+                type="email"
+                required
+                inputMode="email"
+                maxLength={FORM_LIMITS.emailMax}
+                pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+              />
+
+              <FloatingInputField
+                name="company"
+                label={contactCopy.form.company}
+                maxLength={FORM_LIMITS.companyMax}
+              />
+
+              <FloatingSelectField
+                name="revenue"
+                label={contactCopy.form.monthlyRevenue}
+                required
+                options={contactCopy.form.monthlyRevenueOptions}
+              />
+
+              <FloatingTextareaField
+                name="message"
+                label={`${contactCopy.form.message} (${contactCopy.form.messageOptional})`}
+                maxLength={FORM_LIMITS.messageMax}
+              />
+
+              {isCaptchaEnabled ? (
+                <div className="mt-1 flex justify-center sm:justify-start">
+                  <div ref={captchaContainerRef} />
+                </div>
+              ) : null}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="btn-gradient body mt-2 inline-flex h-[var(--contact-submit-height)] w-full items-center justify-center disabled:cursor-not-allowed disabled:opacity-75"
               >
-                <input
-                  type="text"
-                  name="website"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  aria-hidden="true"
-                  className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden opacity-0"
-                />
-                <input type="hidden" name="startedAt" value={formStartedAt} readOnly />
+                {isSubmitting ? contactCopy.sendingLabel : contactCopy.ctaLabel}
+              </button>
 
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <ValidatedInputField
-                    label={contactCopy.form.fullName}
-                    name="name"
-                    hint={contactCopy.form.hints.fullName}
-                    required
-                    maxLength={FORM_LIMITS.nameMax}
-                    validator={(value) =>
-                      value.length > 0 && value.length <= FORM_LIMITS.nameMax
-                    }
-                  />
-                  <ValidatedInputField
-                    label={contactCopy.form.workEmail}
-                    name="email"
-                    hint={contactCopy.form.hints.workEmail}
-                    type="email"
-                    required
-                    inputMode="email"
-                    maxLength={FORM_LIMITS.emailMax}
-                    pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
-                    validator={(value) =>
-                      value.length > 0 &&
-                      value.length <= FORM_LIMITS.emailMax &&
-                      EMAIL_PATTERN.test(value)
-                    }
-                  />
-                </div>
+              <p className="body-sm mt-1 text-center text-[var(--text-muted)]">
+                {contactCopy.legalPrefix}{' '}
+                <a className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]" href="/terms">
+                  {contactCopy.legalTermsLabel}
+                </a>{' '}
+                {contactCopy.legalAnd}{' '}
+                <a className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]" href="/privacy">
+                  {contactCopy.legalPrivacyLabel}
+                </a>
+              </p>
 
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <ValidatedInputField
-                    label={contactCopy.form.company}
-                    name="company"
-                    hint={contactCopy.form.hints.company}
-                    maxLength={FORM_LIMITS.companyMax}
-                    validator={(value) =>
-                      value.length > 0 && value.length <= FORM_LIMITS.companyMax
-                    }
-                  />
-                  <label className="flex flex-col gap-1.5">
-                    <span className="body-sm text-[var(--text-secondary)]">{contactCopy.form.monthlyRevenue}</span>
-                    <select
-                      name="revenue"
-                      className="h-11 rounded-[10px] border border-[color-mix(in_srgb,var(--text-muted)_24%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_78%,transparent)] px-3 text-[var(--text-primary)] outline-none transition-all focus:border-[color-mix(in_srgb,var(--brand-info)_58%,transparent)] focus:shadow-[0_0_0_1px_color-mix(in_srgb,var(--brand-info)_42%,transparent)]"
-                      defaultValue=""
-                    >
-                      <option value="" disabled>
-                        {contactCopy.form.monthlyRevenuePlaceholder}
-                      </option>
-                      {contactCopy.form.monthlyRevenueOptions.map((optionLabel) => (
-                        <option key={optionLabel} value={optionLabel.replace(/\s+/g, '').toLowerCase()}>
-                          {optionLabel}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
-
-                <ValidatedTextareaField
-                  label={contactCopy.form.message}
-                  name="message"
-                  hint={contactCopy.form.hints.message}
-                  minLength={FORM_LIMITS.messageMin}
-                  maxLength={FORM_LIMITS.messageMax}
-                  validator={(value) =>
-                    value.length >= FORM_LIMITS.messageMin &&
-                    value.length <= FORM_LIMITS.messageMax
-                  }
-                />
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn-gradient body mt-2 inline-flex h-12 w-full items-center justify-center disabled:cursor-not-allowed disabled:opacity-75"
-                >
-                  {isSubmitting ? contactCopy.sendingLabel : contactCopy.ctaLabel}
-                </button>
-
-                <p
-                  role="status"
-                  aria-live="polite"
-                  className={`body-sm min-h-[1.4rem] ${
-                    formStatus === 'success'
-                      ? 'text-[var(--brand-profit)]'
-                      : formStatus === 'error'
-                        ? 'text-[var(--brand-loss)]'
-                        : 'text-transparent'
-                  }`}
-                >
-                  {formStatus === 'success'
-                    ? contactCopy.successMessage
+              <p
+                role="status"
+                aria-live="polite"
+                className={`body-sm min-h-[1.4rem] text-center ${
+                  formStatus === 'success'
+                    ? 'text-[var(--brand-profit)]'
                     : formStatus === 'error'
-                      ? formErrorMessage || contactCopy.errorMessage
-                      : '.'}
-                </p>
-              </form>
-            </article>
-
-            <article
-              data-reveal-visual
-              className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] p-5 shadow-[0_16px_34px_rgba(0,0,0,0.34)] transition-transform duration-300 ease-out hover:-translate-y-1 sm:p-6"
-            >
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 opacity-50"
-                style={{
-                  background:
-                    'radial-gradient(94% 88% at 90% 12%, color-mix(in srgb, var(--brand-warning) 20%, transparent) 0%, transparent 72%)',
-                }}
-              />
-              <div className="relative">
-                <h3 className="font-[var(--font-heading)] text-[1.45rem] leading-[1.2] text-[var(--text-primary)]">
-                  {contactCopy.sideTitle}
-                </h3>
-
-                <ul className="mt-5 space-y-3">
-                  {contactCopy.sidePoints.map((point) => (
-                    <li key={point} className="flex items-start gap-2.5">
-                      <MessageSquareText
-                        size={16}
-                        className="mt-1 shrink-0 text-[color-mix(in_srgb,var(--brand-warning)_80%,var(--text-primary)_20%)]"
-                      />
-                      <span className="body text-[var(--text-secondary)]">{point}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-6 rounded-[12px] border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_72%,transparent)] p-4">
-                  <p className="body-sm flex items-start gap-2 text-[var(--text-secondary)]">
-                    <Mail size={16} className="mt-0.5 shrink-0 text-[var(--brand-info)]" />
-                    <span>{contactCopy.replyTime}</span>
-                  </p>
-                </div>
-              </div>
-            </article>
-          </div>
+                      ? 'text-[var(--brand-loss)]'
+                      : 'text-transparent'
+                }`}
+              >
+                {formStatus === 'success'
+                  ? contactCopy.successMessage
+                  : formStatus === 'error'
+                    ? formErrorMessage || contactCopy.errorMessage
+                    : '.'}
+              </p>
+            </form>
+          </article>
         </div>
       </div>
     </section>

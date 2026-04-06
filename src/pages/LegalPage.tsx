@@ -43,9 +43,9 @@ function LegalPage({
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="relative isolate flex-1 overflow-hidden pt-[60px]">
+      <main className="site-main-offset relative isolate flex-1 overflow-hidden">
         <GlobalMotionBackground />
-        <section className="relative overflow-hidden py-20 md:py-28">
+        <section className="site-section">
           <div className="relative mx-auto w-full max-w-[1120px] px-6 md:px-8">
             <div className="mx-auto max-w-[920px]">
               <div className="flex items-center gap-5">
@@ -56,7 +56,7 @@ function LegalPage({
                 <span className="h-px flex-1 bg-[color-mix(in_srgb,var(--text-muted)_32%,transparent)]" />
               </div>
 
-              <div className="mt-10 rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_18%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_88%,transparent)] p-6 shadow-[0_20px_44px_rgba(0,0,0,0.32)] sm:p-8 md:p-10">
+              <div className="section-content rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_18%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_88%,transparent)] p-6 shadow-[0_20px_44px_rgba(0,0,0,0.32)] sm:p-8 md:p-10">
                 <div className="flex flex-col gap-6 border-b border-[color-mix(in_srgb,var(--text-muted)_16%,transparent)] pb-8">
                   <a
                     href="/#top"
