@@ -6,8 +6,8 @@ const copy = enDictionary.header
 
 const navItems = [
   { label: copy.navItems.product, href: '/#product' },
-  { label: copy.navItems.revopsConsulting, href: '/#advisory' },
   { label: copy.navItems.pricing, href: '/#pricing' },
+  { label: copy.navItems.revopsConsulting, href: '/#audit' },
   { label: copy.navItems.contact, href: '/#contact' },
 ]
 
