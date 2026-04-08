@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://clozr.eu/sitemap.xml
+Sitemap: https://www.clozr.eu/sitemap.xml
