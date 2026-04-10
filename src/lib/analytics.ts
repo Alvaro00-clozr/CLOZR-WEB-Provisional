@@ -23,8 +23,10 @@ const ensureGtagStub = () => {
 
   window.dataLayer = window.dataLayer || []
   if (!window.gtag) {
-    window.gtag = (command, target, params) => {
-      window.dataLayer?.push([command, target, params])
+    // Use the same queueing contract as the official Google snippet.
+    window.gtag = function gtag() {
+      // eslint-disable-next-line prefer-rest-params
+      window.dataLayer?.push(arguments)
     }
   }
 }

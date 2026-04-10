@@ -80,7 +80,7 @@ function Header() {
           ))}
         </nav>
         <a
-          href="https://clozr.vercel.app/en/login"
+          href="https://app.clozr.eu"
           target="_blank"
           rel="noopener noreferrer"
           className="hidden h-12 w-36 body cursor-pointer items-center justify-center tracking-wide btn-gradient md:flex"
@@ -125,7 +125,7 @@ function Header() {
                 ))}
               </nav>
               <a
-                href="https://clozr.vercel.app/en/login"
+                href="https://app.clozr.eu"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-gradient body inline-flex h-12 w-full items-center justify-center tracking-wide"

@@ -344,7 +344,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     ].join('\n')
 
     await resend.emails.send({
-      from: 'CLOZR <onboarding@resend.dev>',
+      from: 'CLOZR <alvaro@clozr.eu>',
       to: toEmails,
       replyTo: payload.email,
       subject,
