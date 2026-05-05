@@ -45,7 +45,8 @@ const socialLinks: SocialLink[] = [
   },
   {
     label: copy.social.x,
-    kind: 'disabled',
+    href: 'https://x.com/CLOZRgrowth',
+    kind: 'link',
     iconSrc: '/network/X.svg',
   },
   {
@@ -55,10 +56,10 @@ const socialLinks: SocialLink[] = [
     iconSrc: '/network/Instagram.svg',
   },
   {
-    label: copy.social.email,
-    href: 'mailto:clozrhq@gmail.com',
+    label: copy.social.tiktok,
+    href: 'https://www.tiktok.com/@clozrpartners?_r=1&_t=ZN-966MnsrO6C6',
     kind: 'link',
-    iconSrc: '/network/Message.svg',
+    iconSrc: '/network/TikTok.svg',
   },
 ]
 
@@ -114,6 +115,8 @@ function Footer() {
                   <a
                     key={item.label}
                     href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     aria-label={item.label}
                     className="inline-flex h-[var(--footer-social-button-size)] w-[var(--footer-social-button-size)] items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_20%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_68%,transparent)] text-[var(--text-muted)] transition-[filter,color,border-color] duration-200 hover:brightness-110 hover:text-[var(--text-primary)]"
                   >

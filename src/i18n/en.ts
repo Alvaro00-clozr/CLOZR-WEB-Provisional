@@ -19,7 +19,7 @@ export const enDictionary = {
       contact: 'Contact',
     },
     cta: {
-      getStarted: 'GO CLOZR',
+      getStarted: 'Sign In',
     },
   },
   hero: {
@@ -334,7 +334,7 @@ export const enDictionary = {
       linkedIn: 'LinkedIn',
       x: 'X',
       instagram: 'Instagram',
-      email: 'Email',
+      tiktok: 'TikTok',
     },
   },
   legalPages: {
