@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Menu, X } from 'lucide-react'
 import enDictionary from '../i18n/en'
 
 const copy = enDictionary.header
@@ -48,18 +47,20 @@ function Header() {
 
   return (
     <header
-      className={`site-header fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+      className={`site-header fixed inset-x-0 top-0 z-50 ${
         isScrolled ? 'site-header--scrolled' : ''
       }`}
     >
-      <div className="mx-auto flex h-full w-full items-center justify-between px-6 md:px-8">
+      <div
+        className="mx-auto flex h-full w-full items-center justify-between box-border"
+        style={{ padding: '0 clamp(20px, 4vw, 64px)' }}
+      >
         <a
-          className="site-header-logo inline-flex shrink-0 items-center"
+          className="site-header-logo shrink-0"
           href="/#top"
           aria-label={copy.logoAriaLabel}
         >
           <img
-            className="h-full w-auto object-contain"
             src="/brand/logo_white.png"
             alt={copy.logoAlt}
             width={352}
@@ -68,75 +69,73 @@ function Header() {
           />
         </a>
 
-        <nav className="hidden items-center justify-center gap-8 md:flex" aria-label={copy.navAriaLabel}>
+        <nav
+          className="hidden items-center md:flex"
+          style={{ gap: 36 }}
+          aria-label={copy.navAriaLabel}
+        >
           {navItems.map((item) => (
-            <a
-              key={item.label}
-              className="body-sm inline-flex w-fit cursor-pointer rounded-[var(--radius-lg)] px-2 py-1.5 transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] hover:text-[var(--text-primary)]"
-              href={item.href}
-            >
+            <a key={item.label} className="site-nav-link" href={item.href}>
               {item.label}
             </a>
           ))}
         </nav>
-        <a
-          href="https://app.clozr.eu"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden h-12 w-36 body cursor-pointer items-center justify-center tracking-wide btn-gradient md:flex"
+
+        <div
+          className="hidden items-center md:flex"
+          style={{ gap: 16 }}
         >
-          {copy.cta.getStarted}
-        </a>
+          <a
+            href="https://app.clozr.eu"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary-sm"
+          >
+            {copy.cta.getStarted}
+          </a>
+        </div>
+
         <button
           type="button"
           aria-label={isMobileMenuOpen ? copy.closeMenuAriaLabel : copy.openMenuAriaLabel}
           aria-expanded={isMobileMenuOpen}
           aria-controls="mobile-main-navigation"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_32%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_88%,transparent)] text-[var(--text-primary)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] md:hidden"
+          className={`nav-hamburger md:hidden ${isMobileMenuOpen ? 'is-open' : ''}`}
           onClick={() => setIsMobileMenuOpen((isOpen) => !isOpen)}
         >
-          {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          <span></span>
+          <span></span>
+          <span></span>
         </button>
       </div>
 
-      {isMobileMenuOpen ? (
-        <div className="md:hidden">
-          <button
-            type="button"
-            aria-label={copy.closeOverlayAriaLabel}
-            className="fixed inset-0 top-[var(--header-height-mobile)] z-40 bg-black/30 backdrop-blur-[1px] md:top-[var(--header-height-desktop)]"
+      <div
+        id="mobile-main-navigation"
+        className={`nav-drawer md:hidden ${isMobileMenuOpen ? 'is-open' : ''}`}
+        aria-label={copy.mobileNavAriaLabel}
+        aria-hidden={!isMobileMenuOpen}
+      >
+        {navItems.map((item) => (
+          <a
+            key={`mobile-${item.label}`}
+            href={item.href}
             onClick={() => setIsMobileMenuOpen(false)}
-          />
-          <div className="absolute inset-x-4 top-[calc(100%+0.5rem)] z-50">
-            <div
-              id="mobile-main-navigation"
-              className="widget-premium-border rounded-[var(--radius-lg)] bg-[var(--bg-card)] p-4"
-            >
-              <nav className="flex flex-col gap-1.5" aria-label={copy.mobileNavAriaLabel}>
-                {navItems.map((item) => (
-                  <a
-                    key={`mobile-${item.label}`}
-                    className="body inline-flex w-full rounded-[var(--radius-lg)] px-3 py-2.5 text-[var(--text-primary)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)]"
-                    href={item.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {item.label}
-                  </a>
-                ))}
-              </nav>
-              <a
-                href="https://app.clozr.eu"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-gradient body inline-flex h-12 w-full items-center justify-center tracking-wide"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {copy.cta.getStarted}
-              </a>
-            </div>
-          </div>
+          >
+            {item.label}
+          </a>
+        ))}
+        <div className="nav-drawer-cta">
+          <a
+            href="https://app.clozr.eu"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary-lg"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            {copy.cta.getStarted}
+          </a>
         </div>
-      ) : null}
+      </div>
     </header>
   )
 }

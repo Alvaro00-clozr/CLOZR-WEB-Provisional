@@ -6,6 +6,7 @@ import enDictionary from '../i18n/en'
 type PricingPlan = {
   name: string
   price: string
+  pricePrefix?: string
   previousPrice?: string
   hidePreviousPrice?: boolean
   subtitle: string
@@ -32,12 +33,13 @@ const pricingCopy = {
   },
   plans: [
     {
-      name: enDictionary.pricing.plans.starter.name,
-      price: enDictionary.pricing.plans.starter.price,
-      subtitle: enDictionary.pricing.plans.starter.subtitle,
-      description: enDictionary.pricing.plans.starter.description,
-      features: [...enDictionary.pricing.plans.starter.features],
-      ctaLabel: enDictionary.pricing.plans.starter.cta,
+      name: enDictionary.pricing.plans.growthPartner.name,
+      price: enDictionary.pricing.plans.growthPartner.price,
+      pricePrefix: enDictionary.pricing.plans.growthPartner.pricePrefix,
+      subtitle: enDictionary.pricing.plans.growthPartner.subtitle,
+      description: enDictionary.pricing.plans.growthPartner.description,
+      features: [...enDictionary.pricing.plans.growthPartner.features],
+      ctaLabel: enDictionary.pricing.plans.growthPartner.cta,
       ctaHref: '/#contact',
     },
     {
@@ -51,17 +53,22 @@ const pricingCopy = {
       isPopular: true,
     },
     {
-      name: enDictionary.pricing.plans.growthPartner.name,
-      price: enDictionary.pricing.plans.growthPartner.price,
-      previousPrice: enDictionary.pricing.plans.growthPartner.previousPrice,
-      hidePreviousPrice: true,
-      subtitle: enDictionary.pricing.plans.growthPartner.subtitle,
-      description: enDictionary.pricing.plans.growthPartner.description,
-      features: [...enDictionary.pricing.plans.growthPartner.features],
-      ctaLabel: enDictionary.pricing.plans.growthPartner.cta,
+      name: enDictionary.pricing.plans.starter.name,
+      price: enDictionary.pricing.plans.starter.price,
+      subtitle: enDictionary.pricing.plans.starter.subtitle,
+      description: enDictionary.pricing.plans.starter.description,
+      features: [...enDictionary.pricing.plans.starter.features],
+      ctaLabel: enDictionary.pricing.plans.starter.cta,
       ctaHref: '/#contact',
     },
   ] as PricingPlan[],
+  foundingPartner: {
+    eyebrow: enDictionary.pricing.plans.foundingPartner.eyebrow,
+    headline: enDictionary.pricing.plans.foundingPartner.headline,
+    description: enDictionary.pricing.plans.foundingPartner.description,
+    ctaLabel: enDictionary.pricing.plans.foundingPartner.ctaLabel,
+    ctaHref: enDictionary.pricing.plans.foundingPartner.ctaHref,
+  },
 }
 
 const renderComparisonValue = (value: string) => {
@@ -94,7 +101,7 @@ const pricingVisualRevealOptions = {
   yItems: 112,
   durationItems: 0.66,
   stagger: 0.16,
-  gridColumns: 3,
+  gridColumns: 4,
 } as const
 
 const MAX_VISIBLE_FEATURES = 5
@@ -183,7 +190,7 @@ function PricingSection() {
                 data-reveal-visual
                 className={`relative isolate h-full overflow-hidden rounded-[var(--radius-lg)] p-5 transition-all duration-300 ease-out sm:p-6 ${
                   plan.isPopular
-                    ? 'bg-[color-mix(in_srgb,var(--bg-card)_96%,transparent)] shadow-[var(--pricing-popular-shadow)]'
+                    ? 'bg-[#0D1117] shadow-[var(--pricing-popular-shadow)]'
                     : 'border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] shadow-[var(--pricing-standard-shadow)]'
                 }`}
                 style={
@@ -223,6 +230,11 @@ function PricingSection() {
                     {plan.previousPrice && !plan.hidePreviousPrice ? (
                       <p className="body text-[var(--text-muted)] line-through decoration-[color-mix(in_srgb,var(--text-muted)_75%,transparent)]">
                         {plan.previousPrice}
+                      </p>
+                    ) : null}
+                    {plan.pricePrefix ? (
+                      <p className="body-sm mb-2 uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                        {plan.pricePrefix}
                       </p>
                     ) : null}
                     <p
@@ -282,6 +294,39 @@ function PricingSection() {
               )
             })}
           </div>
+
+          <aside
+            data-reveal-visual
+            className="relative mt-10 overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--brand-warning)_42%,transparent)] bg-[color-mix(in_srgb,#0D1117_92%,transparent)] px-6 py-5 sm:px-8 sm:py-6"
+          >
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 opacity-50"
+              style={{
+                background:
+                  'radial-gradient(80% 120% at 10% 10%, color-mix(in srgb, var(--brand-warning) 22%, transparent) 0%, transparent 70%), radial-gradient(70% 110% at 90% 90%, color-mix(in srgb, var(--brand-warning) 14%, transparent) 0%, transparent 72%)',
+              }}
+            />
+            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="max-w-2xl">
+                <p className="caption tracking-[0.32em] text-[color-mix(in_srgb,var(--brand-warning)_82%,var(--text-primary)_18%)]">
+                  {pricingCopy.foundingPartner.eyebrow}
+                </p>
+                <h3 className="mt-2 font-[var(--font-heading)] text-[clamp(1.25rem,2vw,1.55rem)] leading-[1.2] text-[var(--text-primary)]">
+                  {pricingCopy.foundingPartner.headline}
+                </h3>
+                <p className="body mt-2 text-[var(--text-secondary)]">
+                  {pricingCopy.foundingPartner.description}
+                </p>
+              </div>
+              <a
+                href={pricingCopy.foundingPartner.ctaHref}
+                className="body inline-flex h-11 shrink-0 items-center justify-center self-start rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--brand-warning)_60%,transparent)] bg-[color-mix(in_srgb,var(--brand-warning)_12%,transparent)] px-5 text-[color-mix(in_srgb,var(--brand-warning)_92%,var(--text-primary)_8%)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_22%,transparent)] sm:self-auto"
+              >
+                {pricingCopy.foundingPartner.ctaLabel}
+              </a>
+            </div>
+          </aside>
 
           <div className="mt-6 flex justify-center">
             <button

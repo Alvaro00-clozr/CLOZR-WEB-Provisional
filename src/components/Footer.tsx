@@ -118,7 +118,7 @@ function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={item.label}
-                    className="inline-flex h-[var(--footer-social-button-size)] w-[var(--footer-social-button-size)] items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_20%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_68%,transparent)] text-[var(--text-muted)] transition-[filter,color,border-color] duration-200 hover:brightness-110 hover:text-[var(--text-primary)]"
+                    className="inline-flex h-[var(--footer-social-button-size)] w-[var(--footer-social-button-size)] items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_20%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_68%,transparent)] text-[var(--text-muted)] transition-[filter,color,border-color,background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:brightness-110 hover:text-[var(--text-primary)] hover:bg-[color-mix(in_srgb,var(--brand-warning)_14%,transparent)] hover:border-[color-mix(in_srgb,var(--brand-warning)_28%,transparent)] hover:scale-110 hover:-rotate-[4deg]"
                   >
                     {content}
                   </a>

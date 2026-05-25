@@ -1,263 +1,173 @@
-import { useCallback, useEffect, useRef } from 'react'
-import { useGsapReveal } from '../hooks/useGsapReveal'
+import { useEffect, useRef, useState } from 'react'
 import enDictionary from '../i18n/en'
 
-type GsapInstance = (typeof import('gsap'))['gsap']
+const copy = enDictionary.hero
+const rotatingWords = [...copy.rotatingPhrases]
 
-let heroGsapPromise: Promise<GsapInstance> | null = null
+const COUNTER_ROAS_TARGET = 2.8
+const COUNTER_WASTE_TARGET = 30
+const COUNTER_CASH_TARGET = 500
 
-async function loadHeroGsap() {
-  if (!heroGsapPromise) {
-    heroGsapPromise = import('gsap').then((module) => module.gsap)
-  }
-
-  return heroGsapPromise
+function easeOut(t: number) {
+  return 1 - Math.pow(1 - t, 3)
 }
 
-const copy = enDictionary.hero
-const rotatingPhrases = [...copy.rotatingPhrases]
-const longestRotatingPhrase = rotatingPhrases.reduce(
-  (longestPhrase, phrase) => (phrase.length > longestPhrase.length ? phrase : longestPhrase),
-  rotatingPhrases[0] ?? '',
-)
-
 function HeroSection() {
-  const currentPhraseRef = useRef<HTMLSpanElement>(null)
-  const nextPhraseRef = useRef<HTMLSpanElement>(null)
-  const isAnimatingRef = useRef(false)
+  const sectionRef = useRef<HTMLElement>(null)
+  const twWordRef = useRef<HTMLElement>(null)
 
+  const [roasValue, setRoasValue] = useState(0)
+  const [wasteValue, setWasteValue] = useState(0)
+  const [cashValue, setCashValue] = useState(0)
+
+  // Scroll reveal
   useEffect(() => {
-    const currentPhrase = currentPhraseRef.current
-    const nextPhrase = nextPhraseRef.current
+    const section = sectionRef.current
+    if (!section) return
 
-    if (!currentPhrase || !nextPhrase) {
-      return
-    }
+    const items = section.querySelectorAll<HTMLElement>('.hero-reveal')
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-visible')
+            obs.unobserve(e.target)
+          }
+        })
+      },
+      { threshold: 0.12 },
+    )
 
-    let isDisposed = false
-    let gsapInstance: GsapInstance | null = null
-    let kickOffId: number | null = null
-    let intervalId: number | null = null
+    items.forEach((el) => obs.observe(el))
+    return () => obs.disconnect()
+  }, [])
 
-    let activeIndex = 0
-    currentPhrase.textContent = rotatingPhrases[activeIndex]
-    nextPhrase.textContent =
-      rotatingPhrases[(activeIndex + 1) % rotatingPhrases.length]
+  // Typewriter
+  useEffect(() => {
+    const el = twWordRef.current
+    if (!el) return
 
-    const initAnimation = async () => {
-      const gsap = await loadHeroGsap()
-      if (isDisposed) {
-        return
-      }
+    let i = 0
+    let charIdx = 0
+    let deleting = false
+    let timeoutId: number | null = null
+    let disposed = false
 
-      gsapInstance = gsap
+    const cursor = document.createElement('span')
+    cursor.className = 'tw-cursor'
+    el.after(cursor)
 
-      gsap.set(currentPhrase, {
-        yPercent: 0,
-        rotationX: 0,
-        opacity: 1,
-        transformOrigin: 'bottom center',
-      })
-      gsap.set(nextPhrase, {
-        yPercent: 100,
-        rotationX: -82,
-        opacity: 0,
-        transformOrigin: 'top center',
-      })
-
-      const animateFlip = () => {
-        if (isAnimatingRef.current || !gsapInstance) {
+    const tick = () => {
+      if (disposed) return
+      const word = rotatingWords[i] ?? ''
+      if (!deleting) {
+        charIdx += 1
+        el.textContent = word.slice(0, charIdx)
+        if (charIdx === word.length) {
+          deleting = true
+          timeoutId = window.setTimeout(tick, 1800)
           return
         }
-
-        isAnimatingRef.current = true
-        const incomingIndex = (activeIndex + 1) % rotatingPhrases.length
-        nextPhrase.textContent = rotatingPhrases[incomingIndex]
-
-        gsapInstance
-          .timeline({
-            onComplete: () => {
-              activeIndex = incomingIndex
-              currentPhrase.textContent = rotatingPhrases[activeIndex]
-
-              gsapInstance?.set(currentPhrase, {
-                yPercent: 0,
-                rotationX: 0,
-                opacity: 1,
-              })
-              gsapInstance?.set(nextPhrase, {
-                yPercent: 100,
-                rotationX: -82,
-                opacity: 0,
-              })
-              isAnimatingRef.current = false
-            },
-          })
-          .to(currentPhrase, {
-            duration: 0.82,
-            yPercent: -100,
-            rotationX: 82,
-            opacity: 0,
-            ease: 'power2.in',
-          })
-          .to(
-            nextPhrase,
-            {
-              duration: 0.82,
-              yPercent: 0,
-              rotationX: 0,
-              opacity: 1,
-              ease: 'power2.out',
-            },
-            0.12,
-          )
+      } else {
+        charIdx -= 1
+        el.textContent = word.slice(0, charIdx)
+        if (charIdx === 0) {
+          deleting = false
+          i = (i + 1) % rotatingWords.length
+          timeoutId = window.setTimeout(tick, 320)
+          return
+        }
       }
-
-      kickOffId = window.setTimeout(animateFlip, 1700)
-      intervalId = window.setInterval(animateFlip, 3000)
+      timeoutId = window.setTimeout(tick, deleting ? 55 : 90)
     }
 
-    void initAnimation()
+    timeoutId = window.setTimeout(tick, 1200)
 
     return () => {
-      isDisposed = true
-      if (kickOffId !== null) {
-        window.clearTimeout(kickOffId)
-      }
-      if (intervalId !== null) {
-        window.clearInterval(intervalId)
-      }
-      isAnimatingRef.current = false
-      gsapInstance?.killTweensOf([currentPhrase, nextPhrase])
+      disposed = true
+      if (timeoutId !== null) window.clearTimeout(timeoutId)
+      cursor.remove()
     }
   }, [])
 
-  const { rootRef: textRevealRef } = useGsapReveal<HTMLElement>({
-    itemsSelector: '[data-reveal-text]',
-    start: 'top 86%',
-    once: false,
-    xItems: -72,
-    yItems: 0,
-    durationItems: 0.6,
-    stagger: 0.12,
-  })
+  // Counter animation on intersection
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
 
-  const { rootRef: visualRevealRef } = useGsapReveal<HTMLElement>({
-    itemsSelector: '[data-reveal-visual]',
-    start: 'top 84%',
-    once: false,
-    xItems: 0,
-    yItems: 52,
-    durationItems: 0.62,
-    stagger: 0.14,
-  })
+    let started = false
+    const animate = (to: number, duration: number, setter: (v: number) => void) => {
+      const start = performance.now()
+      const step = (now: number) => {
+        const t = Math.min((now - start) / duration, 1)
+        setter(to * easeOut(t))
+        if (t < 1) requestAnimationFrame(step)
+      }
+      requestAnimationFrame(step)
+    }
 
-  const sectionRef = useCallback(
-    (node: HTMLElement | null) => {
-      textRevealRef(node)
-      visualRevealRef(node)
-    },
-    [textRevealRef, visualRevealRef],
-  )
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !started) {
+          started = true
+          window.setTimeout(() => {
+            animate(COUNTER_ROAS_TARGET, 1800, setRoasValue)
+            animate(COUNTER_WASTE_TARGET, 1600, setWasteValue)
+            animate(COUNTER_CASH_TARGET, 2000, setCashValue)
+          }, 600)
+        }
+      },
+      { threshold: 0.3 },
+    )
+    obs.observe(section)
+    return () => obs.disconnect()
+  }, [])
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative min-h-[700px] overflow-hidden bg-transparent sm:min-h-[780px] md:min-h-[860px] lg:min-h-[960px]"
-    >
-      <picture
-        aria-hidden="true"
-        className="hero-bg-image pointer-events-none absolute inset-0 z-0 block h-full w-full select-none"
-      >
-        <source
-          media="(max-width: 767px)"
-          srcSet="/assets/planet-mobile.jpg 1x, /assets/planet-mobile@2x.jpg 2x"
-          type="image/jpeg"
-        />
-        <source media="(min-width: 768px)" srcSet="/assets/bg-hero.jpeg" />
-        <img
-          src="/assets/planet-mobile.jpg"
-          alt={copy.backgroundAlt}
-          width={720}
-          height={720}
-          decoding="async"
-          loading="eager"
-          fetchPriority="high"
-          className="block h-full w-full object-cover object-bottom"
-        />
-      </picture>
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 z-0"
-        style={{
-          background:
-            'linear-gradient(180deg, rgba(3, 5, 9, 0.78) 0%, rgba(4, 6, 10, 0.58) 30%, rgba(5, 7, 12, 0.18) 54%, rgba(6, 8, 13, 0) 76%), radial-gradient(88% 54% at 50% 24%, rgba(4, 6, 10, 0.4) 0%, rgba(4, 6, 10, 0.14) 44%, transparent 74%)',
-        }}
-      />
-      <div className="absolute inset-0 z-10">
-        <div className="site-shell pt-12 sm:pt-14 md:pt-20">
-          <div className="site-shell-inner text-center">
-            <h1
-              data-reveal-text
-              className="mx-auto max-w-[16ch] px-2 font-[var(--font-heading)] text-[clamp(1.5rem,7vw,3rem)] leading-[1.06] text-[var(--text-primary)] sm:max-w-[19ch] sm:px-0 sm:text-[clamp(1.85rem,7.6vw,4.25rem)] sm:leading-[1.1] lg:max-w-none"
-            >
-              {copy.titleStart}
-              <br />
-              <span className="relative mx-auto inline-grid w-[7.8em] align-top text-center text-[var(--brand-warning)] [perspective:1000px] sm:w-[8.4em] lg:w-auto lg:whitespace-nowrap">
-                <span aria-hidden="true" className="invisible block lg:whitespace-nowrap">
-                  {longestRotatingPhrase}
-                </span>
-                <span
-                  ref={currentPhraseRef}
-                  className="absolute inset-0 block [backface-visibility:hidden] [transform-style:preserve-3d] lg:whitespace-nowrap"
-                >
-                  {copy.rotatingPhrases[0]}
-                </span>
-                <span
-                  ref={nextPhraseRef}
-                  className="absolute inset-0 block [backface-visibility:hidden] [transform-style:preserve-3d] lg:whitespace-nowrap"
-                >
-                  {copy.rotatingPhrases[1]}
-                </span>
-              </span>
-            </h1>
+    <section ref={sectionRef} className="hero-section">
+      <div className="hero-container">
+        <div className="hero-eyebrow hero-reveal">{copy.eyebrow}</div>
+        <h1 className="hero-title hero-reveal" style={{ animationDelay: '0.1s' }}>
+          {copy.titleStart} <em ref={twWordRef}>truth</em> about
+          <br />
+          your revenue.
+        </h1>
+        <p className="hero-sub hero-reveal" style={{ animationDelay: '0.22s' }}>
+          {copy.descriptionLine1} {copy.descriptionLine2}
+        </p>
+        <div
+          className="hero-actions hero-reveal"
+          style={{ animationDelay: '0.34s' }}
+        >
+          <a href="/#contact" className="btn-primary-lg">
+            {copy.primaryCta}
+          </a>
+        </div>
 
-            <p
-              data-reveal-text
-              className="section-copy mx-auto max-w-[34ch] px-2 text-[clamp(0.88rem,3.2vw,1.1rem)] leading-[1.42] text-[var(--text-primary)] sm:max-w-[860px] sm:px-0 md:body-lg"
-            >
-              {copy.descriptionLine1}
-              <br />
-              {copy.descriptionLine2}
-            </p>
-
-            <div
-              data-reveal-visual
-              className="section-content mx-auto flex w-full max-w-[860px] flex-col items-center justify-center gap-4 sm:max-w-none sm:flex-row sm:gap-4"
-            >
-              <a
-                href="/#contact"
-                className="btn-gradient body inline-flex h-14 w-full items-center justify-center gap-2 px-6 sm:w-auto sm:min-w-[250px] sm:px-7"
-              >
-                <span>{copy.primaryCta}</span>
-              </a>
-
-              <button
-                type="button"
-                disabled
-                aria-disabled="true"
-                hidden
-                className="hidden body h-14 w-full cursor-not-allowed items-center justify-center gap-3 rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_22%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_72%,transparent)] px-6 text-[var(--text-muted)] opacity-85 sm:w-auto sm:min-w-[220px] sm:px-7"
-              >
-                <span
-                  aria-hidden="true"
-                  className="inline-block h-0 w-0 border-y-[7px] border-y-transparent border-l-[11px] border-l-[var(--text-muted)]"
-                />
-                <span>{copy.secondaryCta}</span>
-              </button>
+        <div
+          className="hero-counters hero-reveal"
+          style={{ animationDelay: '0.46s' }}
+        >
+          <div className="hero-counter-item">
+            <div className="hero-counter">
+              <span>{roasValue.toFixed(1)}</span>×
             </div>
+            <div className="hero-counter-label">{copy.counters.roasLabel}</div>
+          </div>
+          <div className="hero-counter-item">
+            <div className="hero-counter">
+              −<span>{Math.round(wasteValue)}</span>%
+            </div>
+            <div className="hero-counter-label">{copy.counters.wasteLabel}</div>
+          </div>
+          <div className="hero-counter-item">
+            <div className="hero-counter">
+              $<span>{Math.round(cashValue).toLocaleString()}</span>k
+            </div>
+            <div className="hero-counter-label">{copy.counters.cashLabel}</div>
           </div>
         </div>
+
       </div>
     </section>
   )
