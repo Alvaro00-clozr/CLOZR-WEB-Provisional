@@ -594,6 +594,15 @@ export const enDictionary = {
       ],
     },
   },
+  notFound: {
+    seoTitle: 'Page not found · CLOZR',
+    seoDescription: 'The page you are looking for does not exist or has been moved.',
+    eyebrow: 'ERROR 404',
+    title: 'Page not found.',
+    description:
+      'The page you are looking for does not exist, has been moved, or never existed. Take me back to safer ground.',
+    cta: 'Back to home',
+  },
 } as const
 
 export default enDictionary

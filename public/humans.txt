@@ -1,0 +1,12 @@
+/* TEAM */
+Company: CLOZR
+Contact: privateaccess [at] clozr.eu
+Location: Spain
+Site: https://www.clozr.eu/
+
+/* SITE */
+Last update: 2026/05/28
+Language: English
+Doctype: HTML5
+Components: React, Vite, TypeScript, Tailwind CSS
+Hosting: Vercel
