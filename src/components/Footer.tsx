@@ -57,7 +57,7 @@ const socialLinks: SocialLink[] = [
   },
   {
     label: copy.social.tiktok,
-    href: 'https://www.tiktok.com/@clozrpartners?_r=1&_t=ZN-966MnsrO6C6',
+    href: 'https://www.tiktok.com/@clozrhq',
     kind: 'link',
     iconSrc: '/network/TikTok.svg',
   },

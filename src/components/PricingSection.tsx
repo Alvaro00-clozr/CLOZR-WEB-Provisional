@@ -66,6 +66,13 @@ const pricingCopy = {
     eyebrow: enDictionary.pricing.plans.foundingPartner.eyebrow,
     headline: enDictionary.pricing.plans.foundingPartner.headline,
     description: enDictionary.pricing.plans.foundingPartner.description,
+    pricePrefix: enDictionary.pricing.plans.foundingPartner.pricePrefix,
+    price: '€ 97/month',
+    capacityLabel: enDictionary.pricing.plans.foundingPartner.capacityLabel,
+    supportingLabel: enDictionary.pricing.plans.foundingPartner.supportingLabel,
+    supportingDescription: enDictionary.pricing.plans.foundingPartner.supportingDescription,
+    benefits: [...enDictionary.pricing.plans.foundingPartner.benefits],
+    footnote: enDictionary.pricing.plans.foundingPartner.footnote,
     ctaLabel: enDictionary.pricing.plans.foundingPartner.ctaLabel,
     ctaHref: enDictionary.pricing.plans.foundingPartner.ctaHref,
   },
@@ -105,6 +112,11 @@ const pricingVisualRevealOptions = {
 } as const
 
 const MAX_VISIBLE_FEATURES = 5
+
+const normalizeMojibake = (value: string) =>
+  value
+    .replaceAll('â€™', "'")
+    .replaceAll('Ã¢â‚¬â„¢', "'")
 
 function PricingSection() {
   const [isComparisonVisible, setIsComparisonVisible] = useState(false)
@@ -297,7 +309,7 @@ function PricingSection() {
 
           <aside
             data-reveal-visual
-            className="relative mt-10 overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--brand-warning)_42%,transparent)] bg-[color-mix(in_srgb,#0D1117_92%,transparent)] px-6 py-5 sm:px-8 sm:py-6"
+            className="relative mt-10 overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--brand-warning)_42%,transparent)] bg-[color-mix(in_srgb,#0D1117_92%,transparent)] px-6 py-6 sm:px-8 sm:py-7"
           >
             <div
               aria-hidden="true"
@@ -307,24 +319,58 @@ function PricingSection() {
                   'radial-gradient(80% 120% at 10% 10%, color-mix(in srgb, var(--brand-warning) 22%, transparent) 0%, transparent 70%), radial-gradient(70% 110% at 90% 90%, color-mix(in srgb, var(--brand-warning) 14%, transparent) 0%, transparent 72%)',
               }}
             />
-            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="max-w-2xl">
-                <p className="caption tracking-[0.32em] text-[color-mix(in_srgb,var(--brand-warning)_82%,var(--text-primary)_18%)]">
-                  {pricingCopy.foundingPartner.eyebrow}
-                </p>
-                <h3 className="mt-2 font-[var(--font-heading)] text-[clamp(1.25rem,2vw,1.55rem)] leading-[1.2] text-[var(--text-primary)]">
-                  {pricingCopy.foundingPartner.headline}
+            <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,0.8fr)] lg:items-center">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="caption tracking-[0.32em] text-[color-mix(in_srgb,var(--brand-warning)_82%,var(--text-primary)_18%)]">
+                    {normalizeMojibake(pricingCopy.foundingPartner.eyebrow)}
+                  </p>
+                  <span className="caption inline-flex rounded-[999px] border border-[color-mix(in_srgb,var(--brand-warning)_34%,transparent)] bg-[color-mix(in_srgb,var(--brand-warning)_12%,transparent)] px-3 py-1 tracking-[0.08em] text-[color-mix(in_srgb,var(--brand-warning)_88%,var(--text-primary)_12%)]">
+                    {pricingCopy.foundingPartner.capacityLabel}
+                  </span>
+                </div>
+                <h3 className="mt-3 max-w-2xl font-[var(--font-heading)] text-[clamp(1.4rem,2.4vw,1.8rem)] leading-[1.16] text-[var(--text-primary)]">
+                  {normalizeMojibake(pricingCopy.foundingPartner.headline)}
                 </h3>
-                <p className="body mt-2 text-[var(--text-secondary)]">
-                  {pricingCopy.foundingPartner.description}
+                <p className="body mt-3 max-w-xl text-[var(--text-secondary)]">
+                  {normalizeMojibake(pricingCopy.foundingPartner.description)}
                 </p>
+                <div className="mt-5 grid gap-3 md:grid-cols-2">
+                  {pricingCopy.foundingPartner.benefits.slice(0, 2).map((benefit) => (
+                    <div
+                      key={benefit}
+                      className="rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--text-muted)_18%,transparent)] bg-[color-mix(in_srgb,var(--bg-card)_48%,transparent)] px-4 py-3"
+                    >
+                      <div className="flex items-start gap-2.5">
+                        <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[var(--brand-warning)] shadow-[0_0_14px_color-mix(in_srgb,var(--brand-warning)_45%,transparent)]" />
+                        <p className="body-sm text-[var(--text-secondary)]">
+                          {normalizeMojibake(benefit)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <a
-                href={pricingCopy.foundingPartner.ctaHref}
-                className="body inline-flex h-11 shrink-0 items-center justify-center self-start rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--brand-warning)_60%,transparent)] bg-[color-mix(in_srgb,var(--brand-warning)_12%,transparent)] px-5 text-[color-mix(in_srgb,var(--brand-warning)_92%,var(--text-primary)_8%)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_22%,transparent)] sm:self-auto"
-              >
-                {pricingCopy.foundingPartner.ctaLabel}
-              </a>
+              <div className="rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--brand-warning)_28%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--brand-warning)_10%,transparent)_0%,color-mix(in_srgb,var(--bg-card)_76%,transparent)_100%)] p-5 shadow-[0_16px_34px_rgba(0,0,0,0.28)]">
+                <p className="caption tracking-[0.16em] text-[color-mix(in_srgb,var(--brand-warning)_82%,var(--text-primary)_18%)]">
+                  {normalizeMojibake(pricingCopy.foundingPartner.supportingLabel)}
+                </p>
+                <p className="body-sm mt-4 uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                  {normalizeMojibake(pricingCopy.foundingPartner.pricePrefix)}
+                </p>
+                <p className="mt-1 font-[var(--font-heading)] text-[clamp(2.2rem,3vw,2.6rem)] font-semibold leading-none tracking-[-0.02em] text-[var(--text-primary)]">
+                  {normalizeMojibake(pricingCopy.foundingPartner.price)}
+                </p>
+                <p className="body-sm mt-3 text-[var(--text-secondary)]">
+                  {normalizeMojibake(pricingCopy.foundingPartner.supportingDescription)}
+                </p>
+                <a
+                  href={pricingCopy.foundingPartner.ctaHref}
+                  className="body mt-5 inline-flex h-11 w-full items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--brand-warning)_60%,transparent)] bg-[color-mix(in_srgb,var(--brand-warning)_12%,transparent)] px-5 text-[color-mix(in_srgb,var(--brand-warning)_92%,var(--text-primary)_8%)] transition-colors hover:bg-[color-mix(in_srgb,var(--brand-warning)_22%,transparent)]"
+                >
+                  {normalizeMojibake(pricingCopy.foundingPartner.ctaLabel)}
+                </a>
+              </div>
             </div>
           </aside>
 

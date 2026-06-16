@@ -290,7 +290,20 @@ export const enDictionary = {
         eyebrow: 'Private Founding Partner Access',
         headline: 'Help shape CLOZR’s revenue operating layer from the inside.',
         description:
-          'We are opening 15 private infrastructure partner slots for selected D2C brands. Direct founder access, lifetime founding rate, and a seat at the table while we build.',
+          'Early access, direct founder line, and roadmap influence for selected D2C brands.',
+        pricePrefix: 'From',
+        price: '€ 97/month',
+        capacityLabel: '15 private partner slots',
+        supportingLabel: 'Application only',
+        supportingDescription:
+          'Lifetime founding pricing for a limited cohort.',
+        benefits: [
+          'Direct founder access',
+          'Roadmap influence',
+          'A seat at the table as CLOZRâ€™s infrastructure and roadmap evolve.',
+        ],
+        footnote:
+          'Designed for operators who want to shape the control layer, not just subscribe to it after launch.',
         ctaLabel: 'Request private access',
         ctaHref: '/#contact',
       },
